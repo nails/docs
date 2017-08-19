@@ -4,6 +4,7 @@ In this tutorial we'll create a XX application from scratch using Nails. It's pu
 
 The complete project can be viewed [here](#todo) should you want to refer to anything in more detail.
 
+### Index
 
  - [Prerequisites](#prerequisites)
  - [The Nails CLI tool](#cli)
@@ -17,7 +18,7 @@ The complete project can be viewed [here](#todo) should you want to refer to any
  - [Understanding migrations](#migrations)
  - [Installing an external component](#component)
 
-
+--
 
 <a name="prerequisites"></a>
 ### Prerequisites
@@ -110,7 +111,7 @@ Nails, by default, uses the task runner Gulp to compile its CSS and JS. Sass is 
 ### Understanding routes
 
 > @todo - complete this section
-> 
+>
 > - where routes are stored
 > - how routes work
 > - might be worth updating Nails so that all components and the app use the same route writing mechanic
@@ -147,7 +148,7 @@ This will force a URL pattern matching `overridden-route/(.*)` (note the use of 
 ### Creating a module, controller, and view
 
 > @todo - complete this section
-> 
+>
 > - Update the skeleton so that application/controllers and application/views aren't there
 
 

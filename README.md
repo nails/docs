@@ -5,9 +5,19 @@
 > This repository will serve as the source for Nails documentation and is very much a WIP at the moment.
 
 
-## Getting Started
+## Introduction
 
-This guide is a quick summary of what Nails is, how it works and how to use it in real life. The [Overview](getting-started/overview.md) covers the _what_, while the [Tutorial](getting-started/tutorial.md) covers the _how_.
+This guide is a quick summary of what Nails is, how it works and how to use it in real life.
 
-- [Overview](getting-started/overview.md)
-- [Tutorial](getting-started/tutorial.md)
+- [Introduction to Nails](intro/README.md)
+- [Routing](intro/routing.md)
+- [Controllers & Views](intro/controllers-and-views.md)
+- [Factory](intro/factory/README.md)
+    - [Services](intro/factory/services.md)
+    - [Models](intro/factory/models.md)
+    - [Properties](intro/factory/properties.md)
+- [Assets](intro/assets.md)
+- [Drivers](intro/drivers.md)
+- [Skins](intro/skins.md)
+- [Tutorial](tutorial/README.md)
+- [FAQs](faqs/README.md)

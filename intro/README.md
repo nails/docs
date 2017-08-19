@@ -1,6 +1,8 @@
 ## Overview
 
-- [What is Nails](#"what-is-nails)
+### Index
+
+- [What is Nails](#what-is-nails)
 - [How does it work](#how-does-it-work)
 - [What are components](#what-are-components)
 - [Where do you get components](#where-do-you-get-components)
