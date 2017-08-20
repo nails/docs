@@ -1,4 +1,4 @@
-# Factory › Properties
+# Database
 
 ## Index
 - [Item One](#item-one)

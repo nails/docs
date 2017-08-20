@@ -1,4 +1,4 @@
-# Factory › Properties
+# Database › Seeders
 
 ## Index
 - [Item One](#item-one)

@@ -4,18 +4,20 @@
 
 > This repository will serve as the source for Nails documentation and is very much a WIP at the moment.
 
-
-## Introduction
-
 This guide is a quick summary of what Nails is, how it works and how to use it in real life.
 
 - [Introduction to Nails](intro/README.md)
+- [Command Line Tool](intro/command-line-tool.md)
+- [Configuration](intro/configuration.md)
 - [Routing](intro/routing.md)
 - [Controllers & Views](intro/controllers-and-views.md)
 - [Factory](intro/factory/README.md)
     - [Services](intro/factory/services.md)
     - [Models](intro/factory/models.md)
     - [Properties](intro/factory/properties.md)
+- [Database](intro/database/README.md)
+    - [Migrations](intro/database/migrations.md)
+    - [Seeders](intro/database/seeders.md)
 - [Assets](intro/assets.md)
 - [Drivers](intro/drivers.md)
 - [Skins](intro/skins.md)
