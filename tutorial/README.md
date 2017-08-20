@@ -50,7 +50,7 @@ nails new nails-tutorial
 
 This will create a new directory (named `nails-tutorial`), pull down the skeleton, download dependencies, and then
 execute the interactive installer which will prompt you for some configuration details (see
-[Configuring the application](#configure)).
+[Configuring the application](#configuring-the-application)).
 
 > Tip: Configure your Virtual Host and database now, you'll need them as the application installs
 
