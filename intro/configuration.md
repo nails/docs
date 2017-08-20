@@ -1,7 +1,9 @@
+# Configuration
+
 There are two distinct configuration files: `config/app.php` and `config/deploy.php`; if they don't already exist then
 both of these are created when running `nails install`.
 
-### `config/app.php`
+## `config/app.php`
 
 This is where global constants are defined which configure the app. This file is committed to version control and the
 constants defined in here should apply regardless of the environment in which the app is being run.
@@ -14,10 +16,10 @@ Examples include:
 - Default language
 
 
-### `config/deploy.php`
-This is where global constants which _do_ vary between environments are stored. This file is **not** committed to
-version control and it is expected that your deployment process will create this file and populate it with the correct
-variables.
+## `config/deploy.php`
+This is where global constants which _do_ vary between environments are stored, or if the values are particularly
+sensitive/secret. This file is **not** committed to version control and it is expected that your deployment process will
+create this file and populate it with the correct variables.
 
 Examples include:
 

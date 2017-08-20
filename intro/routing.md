@@ -70,9 +70,9 @@ In the above example we have a module called `mymodule` which contains two contr
 method is provided, the router will assume `index`, if no controller is provided then the router will assume a
 controller named the same as the module. For example, all the following URLs would resolve to the same place:
 
-- `mymodule/mymodule/index`
-- `mymodule/mymodule`
-- `mymodule`
+    mymodule/mymodule/index
+    mymodule/mymodule
+    mymodule
 
 Assuming each controller contains the following methods `index()` and `bar()` then the following routes would resolve as
 follows:
