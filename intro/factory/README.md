@@ -1,6 +1,5 @@
 # Factory
 
-## Index
 - [Services](#services)
 - [Models](#models)
 - [Properties](#properties)

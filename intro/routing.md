@@ -14,8 +14,8 @@ Specificity is important, a match near the top of the chain will always take pre
 Explicit application routes are set in the `application/config/routes.php` file and take the following format:
 
 ```php
-$route['some/url/structure']   = 'controller/methodOne';
-$route['some/other/structure'] = 'controller/methodTwo';
+$route['some/url/structure']   = 'module/controller/methodOne';
+$route['some/other/structure'] = 'module/controller/methodTwo';
 ```
 
 When Nails detects a matching URL structure, it will direct the request to the specified controller and execute the
@@ -28,29 +28,29 @@ aliases for regular expressions with `:any` being translated to `[^/]+` and `:nu
 
 ## Generated Routes
 
-Nails also provides the ability for routes to be generated dynamically; this is useful when modules (or indeed the
+Nails also provides the ability for routes to be generated dynamically; this is useful when components (or indeed the
 application) need to write specific routes dependent on the contents of the database. These are generated on demand when
 a module determines that the routes need to be updated. These are written to a file in
 `application/cache/routes_app.php` and take the exact same format as the manually specified routes in the
 `application/config/routes.php` file.
 
 A good example of these being used is by the CMS module, the URI for each page can be defined by the user, so for each
-page a custom route is written which maps it to it's ID, for example: a page with the route `my-cms-page` and the ID
+page a custom route is written which maps it to its ID, for example: a page with the route `my-cms-page` and the ID
 `123` would have the following route written:
 
 ```php
-$route['my-cms-page']   = 'cms/render/123';
+$route['my-cms-page'] = 'cms/render/123';
 ```
 
 This will cause Nails to load the CMS module's `render` controller and pass in the distinct Page ID which it can then
 use to render the page.
 
 ## Automatic Routes
-Of no matching explicit or generated route is found then the router switches into automatic mode and attempts to infer
+If no matching explicit or generated route is found then the router switches into automatic mode and attempts to infer
 the desired controller. It assumes that the URL segments map to controllers in the following way:
 
 ```
-example.com/module/controller/method
+example.com/<module>/<controller>/<method>
 ```
 
 Modules are defined in the `application/modules/` directory and have the following structure:

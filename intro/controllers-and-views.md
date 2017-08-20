@@ -1,9 +1,13 @@
 # Controllers & Views
 
+- [The Base Controller](#the-base-controller)
+- [Views](#views)
+- [Sample Controller](#sample-controller)
+
 Controllers and views are the basic building blocks of Nails applications. Controllers are responsible for handling
 business logic, while the views are responsible for handling presentation.
 
-In all but exceptional cases, controllers and views are stored within modules, i.e under `application/modules`
+In all but exceptional cases, controllers and views are stored within modules, i.e under `application/modules`.
 
 ## The Base Controller
 
@@ -27,7 +31,7 @@ In some cases controllers will extend another Base controller (e.g. in the Admin
 themselves are extensions of the app's base controller, but do additional set up.
 
 
-### Views
+## Views
 
 Views are loaded using the `View` service. this service provides a `load()` method which accepts three arguments:
 
@@ -48,12 +52,12 @@ following array:
 Would be accessible in the view as `$foo` and `$micky`. Controllers have a protected property named `$data` which is
 intended to be used to store variables which will be passed to the view as it can be accessed across controller methods.
 
-### Sample controller
+## Sample controller
 
 The following example is a very basic controller with a method which loads a view, top and tailed with the global site
 header and footer.
 
-#### Folder structure
+### Folder structure
 ```
 application/
     ↳ modules/
@@ -63,7 +67,7 @@ application/
             ↳ views/
                 ↳ index.php
 ```
-#### Controller
+### Controller
 ```php
 <?php
 
@@ -84,7 +88,7 @@ class Foo extends Base
 }
 ```
 
-#### View
+### View
 
 ```html
 <h1>Hello, <?=$name?>!</h1>
