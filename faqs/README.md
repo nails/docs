@@ -32,18 +32,15 @@ diagrams.
 
 ## How do I load assets?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I load content from the API?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I build a CMS template?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I build CMS widgets
 
@@ -55,25 +52,20 @@ pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I add global meta data to pages globally?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I upload files to the CDN?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I serve, crop, and scale files from the CDN?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How does form validation work?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
 
 ## How do I set flash data for errors/success messages?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
-pharetra augue. Vestibulum id ligula porta felis euismod semper.
+    @todo
