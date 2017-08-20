@@ -2,8 +2,8 @@
 
 ## Index
 
-- [How do expandable fields work?](#how-do-expandable-fields-work)
 - [How do I query using getAll() effectively?](#how-do-i-query-using-getall-effectively)
+- [How do expandable fields work?](#how-do-expandable-fields-work)
 - [How do I load assets?](#how-do-i-load-assets)
 - [How do I load content from the API?](#how-do-i-load-content-from-the-api)
 - [How do I build a CMS template?](#how-do-i-build-a-cms-template)
@@ -16,26 +16,34 @@
 - [How do I set flash data for errors/success messages?](#how-do-i-set-flash-data-for-errorssuccess-messages)
 
 
+## How do I query using getAll() effectively?
+
+See [Querying Models](../intro/factory/models.md#querying-models) for detailed information and examples.
+
 
 ## How do expandable fields work
 
-(cheat sheet for single/multiple + screengrab annotated).
+Expandable fields is a concept in Nails which allows for one model to delegate a query to another model, and bundle the
+result into the main response. Expandable fields can be nested to any number of levels.
 
-## How do I query using getAll() effectively?
+See [Expandable Fields](../intro/factory/models.md#expandable-fields) for more detailed information, examples, and
+diagrams.
 
-(including where/or/and/in/sort/limit) + examples for each
 
 ## How do I load assets?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I load content from the API?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I build a CMS template?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I build CMS widgets
 
@@ -47,20 +55,25 @@ Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus portt
 
 ## How do I add global meta data to pages globally?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I upload files to the CDN?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I serve, crop, and scale files from the CDN?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How does form validation work?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
 
 ## How do I set flash data for errors/success messages?
 
-Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a pharetra augue. Vestibulum id ligula porta felis euismod semper.
+Donec id elit non mi porta gravida at eget metus. Curabitur blandit tempus porttitor. Nulla vitae elit libero, a
+pharetra augue. Vestibulum id ligula porta felis euismod semper.
