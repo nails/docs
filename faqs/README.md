@@ -2,18 +2,18 @@
 
 ## Index
 
-[How do expandable fields work?](#how-do-expandable-fields-work)
-[How do I query using getAll() effectively?](#how-do-i-query-using-getall-effectively)
-[How do I load assets?](#how-do-i-load-assets)
-[How do I load content from the API?](#how-do-i-load-content-from-the-api)
-[How do I build a CMS template?](#how-do-i-build-a-cms-template)
-[How do I build CMS widgets?](#how-do-i-build-cms-widgets)
-[How do I build admin sections?](#how-do-i-build-admin-sections)
-[How do I add global meta data to pages globally?](#how-do-i-add-global-meta-data-to-pages-globally)
-[How do I upload files to the CDN?](#how-do-i-upload-files-to-the-cdn)
-[How do I serve, crop, and scale files from the CDN?](#how-do-i-serve-crop-and-scale-files-from-the-cdn)
-[How does form validation work?](#how-does-form-validation-work)
-[How do I set flash data for errors/success messages?](#how-do-i-set-flash-data-for-errorssuccess-messages)
+- [How do expandable fields work?](#how-do-expandable-fields-work)
+- [How do I query using getAll() effectively?](#how-do-i-query-using-getall-effectively)
+- [How do I load assets?](#how-do-i-load-assets)
+- [How do I load content from the API?](#how-do-i-load-content-from-the-api)
+- [How do I build a CMS template?](#how-do-i-build-a-cms-template)
+- [How do I build CMS widgets?](#how-do-i-build-cms-widgets)
+- [How do I build admin sections?](#how-do-i-build-admin-sections)
+- [How do I add global meta data to pages globally?](#how-do-i-add-global-meta-data-to-pages-globally)
+- [How do I upload files to the CDN?](#how-do-i-upload-files-to-the-cdn)
+- [How do I serve, crop, and scale files from the CDN?](#how-do-i-serve-crop-and-scale-files-from-the-cdn)
+- [How does form validation work?](#how-does-form-validation-work)
+- [How do I set flash data for errors/success messages?](#how-do-i-set-flash-data-for-errorssuccess-messages)
 
 
 
