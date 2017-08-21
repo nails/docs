@@ -19,6 +19,8 @@ This guide is a quick summary of what Nails is, how it works and how to use it i
     - [Migrations](intro/database/migrations.md)
     - [Seeders](intro/database/seeders.md)
 - [Assets](intro/assets.md)
+- [Helpers](intro/helpers.md)
+- [Logging](intro/logging.md)
 - [Drivers](intro/drivers.md)
 - [Skins](intro/skins.md)
 - [Tutorial](tutorial/README.md)

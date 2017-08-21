@@ -3,7 +3,6 @@
 ## Index
 
 - [What is Nails](#what-is-nails)
-- [How does it work](#how-does-it-work)
 - [What are components](#what-are-components)
 - [Where do you get components](#where-do-you-get-components)
 - [Anatomy of an application](#anatomy-of-an-application)
@@ -35,11 +34,6 @@ Composer), allowing complete chunks of functionality to be brought in so time an
 
 Nails is a young framework, but one which is actively developed with features, fixes and updates being pushed almost
 every day.
-
-
-## How does it work
-
-> @todo - complete this section
 
 
 ## What are components
@@ -111,22 +105,53 @@ Location: /application/components/my-module/config.json
 
 ## Anatomy of an application
 
-> @todo - complete this section
->
-> - application directory
-> - modules directory
-> - src directory
-> - composer.json
-> - services.php
-> - logging
-> - routes
-> - console
+The basic directory structure of an application looks like this:
+
+```
+application/
+    ↳ cache/
+    ↳ config/
+        ↳ routes.php
+    ↳ helpers/
+    ↳ logs
+    ↳ migrations/
+    ↳ modules/
+    ↳ services/
+        ↳ services.php
+assets/
+config/
+    ↳ app.php
+    ↳ deploy.php
+src/
+    ↳ Controller/
+    ↳ Model/
+composer.json
+```
+
+- `application/` - This directory contains most of the app's business logic
+    - `cache/` - This directory should be sued for temporary storage, the `DEPLOY_CACHE_DIR` constant is usefulhere.
+    - `config/` - This directory contains various configuration files; it is mainly used by CodeIgniter
+        - `routes.php` - The routing file; [more information](routing.md)
+    - `helpers/` - Helpers directory; [more information](helpers.md)
+    - `logs` - The Log directory; [more information](logging.md)
+    - `migrations/` - Where database migrations are stored; [more information](database/migrations.md)
+    - `modules/` - Where modules are stored; [more information](controllers-and-views.md)
+    - `services/`
+        - `services.php` - The application's services definition
+- `assets/` - Where front end assets are stored
+- `config/` - Where the app configurations are stored; [more information](configuration.md)
+    - `app.php`
+    - `deploy.php`
+- `src/` - Where services, models and other PSR-4 auto-loadable classes are stored
+    - `Controller/`
+    - `Model/`
+- `composer.json` - The application's composer dependencies
 
 
 ## Anatomy of a component
 
-> @todo - complete this section
->
-> - composer.json
-> - src directory
-> - public directory
+```
+composer.json
+src/
+*public*/
+```
