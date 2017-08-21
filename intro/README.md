@@ -8,7 +8,6 @@
 - [Anatomy of an application](#anatomy-of-an-application)
 - [Anatomy of a component](#anatomy-of-a-component)
 
---
 
 ## What is Nails
 
@@ -38,13 +37,16 @@ every day.
 
 ## What are components
 
-
 Summarised, components are simply packages which are pulled in via Composer. What makes them a _Nails_ component is the
 presence of the `extra.nails` property in the package's `composer.json` file. The existence of this property allows the
 Nails loader to auto-discover the component, and can also used to configure various other aspects of the component.
 
-> @todo - further explain what properties must be set (or can be set) in `composer.json`
+Generally speaking, components bring about additional, generic functionality to Nails apps; this can be full blown
+front-end GUIs, admin controllers, or simply a service which exposes functionality. For example:
 
+- The CMS component brings about admin interfaces which allow the user to generate static pages, manage menus, create
+  snippets as well as a front end mechanic for rendering these.
+- The PDF component provides a service for creating PDFs, saving them to the CDN, or streaming them to the browser.
 
 
 ## Where do you get components
@@ -58,16 +60,15 @@ to distribute using your own VCS - if Composer can see it, it can be used.
 
 ## Non-distributed components
 
-Sometimes it is necessary to define some code as a component but not necessarily distribute it publicly. For example, a
-module might use components in order to provide drivers for compatibility with various providers (e.g. a payment
-provider); in order to allow the module to use a proprietary driver (which shouldn't be public) the app can define a
-component at `application/components`. Components defined here function in exactly the same way as Composer installed
-components (and have no special preference). The only difference is instead of a `composer.json` file the loader will
-look for a `config.json` file; this file should contain a JSON object which is the equivalent of what would be found at
-`extra.nails` in `composer.json`.
+Sometimes it is necessary to define some code as a component but not necessarily distribute it publicly. For example, an
+application might use non-distributed components in order to provide drivers for compatibility with various providers
+(e.g. a payment provider); in order to allow the module to use a proprietary driver (which shouldn't be public) the app
+can define a component at `application/components`. Components defined here function in exactly the same way as Composer
+installed components (and have no special preference). The only difference is instead of a `composer.json` file the
+loader will look for a `config.json` file; this file should contain a JSON object which is the equivalent of what would
+be found at `extra.nails` in `composer.json`.
 
 Examples are often easier to understand; the following are equivalent:
-
 
 **Composer distributed package**
 
@@ -89,7 +90,6 @@ Location: /vendor/my-vendor/my-module/json
 
 ```
 
-
 **Application bundled package**
 
 ```
@@ -108,50 +108,39 @@ Location: /application/components/my-module/config.json
 The basic directory structure of an application looks like this:
 
 ```
-application/
-    ↳ cache/
-    ↳ config/
-        ↳ routes.php
-    ↳ helpers/
-    ↳ logs
-    ↳ migrations/
-    ↳ modules/
+application/                //  Contains most of the app's business logic.
+    ↳ cache/                //  Should be used for temp storage, the `DEPLOY_CACHE_DIR` constant points here.
+    ↳ config/               //  Contains various configuration files; it is mainly used by CodeIgniter
+        ↳ routes.php        //  The routing file
+    ↳ helpers/              //  Helpers directory
+    ↳ logs                  //  The Log directory
+    ↳ migrations/           //  Where database migrations are stored
+    ↳ modules/              //  Where modules are stored
+        *moduleName*/
+            ↳ controllers/
+            ↳ views/
     ↳ services/
-        ↳ services.php
-assets/
-config/
+        ↳ services.php      //  The application's services definition
+assets/                     //  Where front end assets are stored
+config/                     //  Where the app configurations are stored
     ↳ app.php
     ↳ deploy.php
-src/
+src/                        //  Where services, models and other PSR-4 auto-loadable classes are stored
     ↳ Controller/
     ↳ Model/
-composer.json
+composer.json               //  The application's composer dependencies
 ```
-
-- `application/` - This directory contains most of the app's business logic
-    - `cache/` - This directory should be sued for temporary storage, the `DEPLOY_CACHE_DIR` constant is usefulhere.
-    - `config/` - This directory contains various configuration files; it is mainly used by CodeIgniter
-        - `routes.php` - The routing file; [more information](routing.md)
-    - `helpers/` - Helpers directory; [more information](helpers.md)
-    - `logs` - The Log directory; [more information](logging.md)
-    - `migrations/` - Where database migrations are stored; [more information](database/migrations.md)
-    - `modules/` - Where modules are stored; [more information](controllers-and-views.md)
-    - `services/`
-        - `services.php` - The application's services definition
-- `assets/` - Where front end assets are stored
-- `config/` - Where the app configurations are stored; [more information](configuration.md)
-    - `app.php`
-    - `deploy.php`
-- `src/` - Where services, models and other PSR-4 auto-loadable classes are stored
-    - `Controller/`
-    - `Model/`
-- `composer.json` - The application's composer dependencies
-
 
 ## Anatomy of a component
 
+A typical component looks like this:
+
 ```
-composer.json
-src/
-*public*/
+composer.json       //  The component's composer file
+src/                //  Services, Models, etc which can be loaded
+services/
+    ↳ services.php  //  The application's services definition
+*moduleName*/       //  If the module provides controllers and/or views, they are in here
+    ↳ controllers/
+    ↳ views/
 ```
