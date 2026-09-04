@@ -117,10 +117,7 @@ Image like objects can be manipulated on-the-fly using the following functions:
 
 ## How does form validation work?
 
-Form validation should use the `FormValidation` service. See
-[CodeIgniter's docs](https://www.codeigniter.com/user_guide/libraries/form_validation.html) for further information.
-
-    @todo - expand on this
+Form validation uses the `FormValidation` service, which validates a data set against a set of rules and works in web requests, on the command line and in tests. See [Validation](../core-services/validation.md) for the full guide, including how to write reusable validator classes and custom rules.
 
 ## How do I set flash data for errors/success messages?
 
