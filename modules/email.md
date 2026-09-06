@@ -80,19 +80,122 @@ application/modules/email/views/book/reviewed.php
 application/modules/email/views/book/reviewed_plaintext.php
 ```
 
-### Header and Footer
+### The email shell
 
-Your application can specify global header and footer templates to use. These will top-and-tail all emails and bring unity to all the emails sent by your application. To override the default header and footer you can add the following files:
+Every email is wrapped in a shared header and footer which bring unity to all the emails your application sends — a masthead, a card, and a footer wrapped around whatever the body view renders:
+
+```
+masthead          logo, or the app name as text
+card
+    subject banner
+    greeting      "Hi {{sentTo.first_name}},"
+    ← body view →
+    sign off
+footer
+    view online / unsubscribe links
+    postal address
+```
+
+You very rarely need to touch the header or footer views directly. There are three ways to customise the shell, cheapest first.
+
+**1. Do nothing.** The masthead looks for a logo — your app's composer `extra.nails.data.logo_url`, then the `APP_LOGO_URL` config value, then `assets/img/logo.{png,jpg,gif}` — and falls back to your app's name as text if none is found.
+
+**2. Set the content settings in Admin.** Under *Admin → Settings → Email → Content*:
+
+| Setting          | Effect                                     |
+| ---------------- | ------------------------------------------- |
+| Sign Off         | A block rendered below the body of every email |
+| Footer Address   | A postal address in the footer              |
+
+Both are omitted entirely (no empty row) when left blank, and both are rendered through the email's Mustache context, so `The {{appName}} Team` works.
+
+**3. Override a slot.** The shell is broken up into small, independently-overridable **slots**. Drop a file into `application/modules/email/views/structure/slots/` using one of the names below and it wins over the module's own copy — no registration required:
+
+| Slot | Default |
+| --- | --- |
+| `masthead` | The discovered logo, else the app name as text |
+| `greeting` | `Hi {{sentTo.first_name}},`, falling back to `Hi,` |
+| `signoff` | The *Sign Off* setting, else nothing |
+| `footer_links` | View-online and unsubscribe links |
+| `footer_address` | The *Footer Address* setting, else nothing |
+| `styles` | Nothing — see [Overriding the CSS](email.md#overriding-the-css) |
+
+Each slot (bar `styles`) has a `<slot>_plaintext` counterpart for the plain text part of the email, which you should override alongside it — e.g. `slots/masthead.php` and `slots/masthead_plaintext.php`.
+
+{% hint style="info" %}
+Slots are given `$emailObject`, the same object available to body views.
+{% endhint %}
+
+#### Overriding the header and footer directly
+
+Slots cover the vast majority of customisation, but if you need to restructure the shell itself, you can still override the two structure views wholesale:
 
 ```bash
-# Header views
 application/modules/email/views/structure/email_header.php
 application/modules/email/views/structure/email_header_plaintext.php
-
-# Footer views
 application/modules/email/views/structure/email_footer.php
 application/modules/email/views/structure/email_footer_plaintext.php
 ```
+
+{% hint style="warning" %}
+The header and footer are **two halves of one document**, not two independent views — the header opens tags (`<html>`, `<body>`, the layout tables) which the footer closes. If you override one you must override the other, and keep the tags balanced yourself. Prefer overriding a slot instead wherever you can.
+{% endhint %}
+
+### Styling emails
+
+Body views are bare HTML fragments — a few paragraphs, a table, a button — styled entirely by classes the shell already provides. You should not open a layout `<table>` or add `style` attributes of your own. The most common classes:
+
+```markup
+<p class="alert alert-warning">Something needs your attention.</p>
+
+<a href="{{url}}" class="btn btn-primary">Pay online now</a>
+
+<table class="table table--list">
+  <tr><td>Reference</td><td>{{invoice.ref}}</td></tr>
+</table>
+
+<div class="panel">
+  <div class="panel__header">Order summary</div>
+  <div class="panel__body">…</div>
+</div>
+```
+
+Other components available out of the box include `badge`, `divider`, `hero` and `code`, plus text/spacing utilities such as `text-muted`, `text-center` and the `m-*`/`p-*` spacing scale. See the module's [README](https://github.com/nails/module-email#class-reference) for the full class reference.
+
+#### Overriding the CSS
+
+All styling compiles from Sass down to a single `<style>` block embedded in the header — there's no CSS inliner, and no `<link>` support in most email clients. There are two ways to change it, and they can be combined:
+
+{% tabs %}
+{% tab title="Override a few tokens" %}
+Every colour, spacing and radius value is a Sass variable prefixed `$email-` and marked `!default`, so setting it before importing the framework overrides it:
+
+```scss
+$email-color-brand: #00a0b0;
+$email-radius-card: 0;
+@import '../../vendor/nails/module-email/assets/sass/email';
+```
+
+Rebuild the module's CSS after changing this (`yarn build` in `module-email`, or your app's own build step, then commit the result).
+{% endtab %}
+
+{% tab title="Replace the CSS entirely" %}
+Override the `styles` slot to inject your own compiled stylesheet, cascading over — or replacing — the framework's rules:
+
+```php
+// application/modules/email/views/structure/slots/styles.php
+<style type="text/css">
+    <?php require NAILS_APP_PATH . 'assets/css/email.min.css'; ?>
+</style>
+```
+
+This has to be an inline `<style>` block, since there is no CSS inliner in the pipeline.
+{% endtab %}
+{% endtabs %}
+
+{% hint style="info" %}
+Sass tokens compile down to literal values rather than CSS custom properties — Outlook's rendering engine has no `var()` support, so this is deliberate rather than an oversight.
+{% endhint %}
 
 ### Template Data
 
@@ -120,6 +223,7 @@ In addition to the user-supplied data, Nails will populate the following data va
 | `url.viewOnline`  | The URL where the email can be viewed in a browser.                                                                           |
 | `url.unsubscribe` | The URL where the suer can unsubscribe from this email type. (If the email cannot be unsubscribed from, this will be blank)   |
 | `url.trackerImg`  | The URL of the tracker image for that URL.                                                                                    |
+| `preheader`       | The snippet a client shows next to the subject in the message list. Set this via `data()` to fill it in.                     |
 
 ### PHP in templates
 
