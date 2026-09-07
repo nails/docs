@@ -164,23 +164,37 @@ Other components available out of the box include `badge`, `divider`, `hero` and
 
 #### Overriding the CSS
 
-All styling compiles from Sass down to a single `<style>` block embedded in the header — there's no CSS inliner, and no `<link>` support in most email clients. There are two ways to change it, and they can be combined:
+All styling compiles from Sass down to a single `<style>` block embedded in the header — there's no CSS inliner, and no `<link>` support in most email clients.
 
-{% tabs %}
-{% tab title="Override a few tokens" %}
-Every colour, spacing and radius value is a Sass variable prefixed `$email-` and marked `!default`, so setting it before importing the framework overrides it:
+`module-email` is a Composer dependency, installed into `vendor/` like any other package — it isn't cloned or rebuilt in place, and nothing under `vendor/` should be edited. To customise the CSS, you compile your **own** stylesheet, in your app, from the framework's Sass, then hand the result to the module through the `styles` slot:
+
+{% stepper %}
+{% step %}
+### Set your tokens
+
+Every colour, spacing and radius value is a Sass variable prefixed `$email-` and marked `!default`. In your app's own Sass — not the module's — set the ones you want to change, then import the framework:
 
 ```scss
+// application/assets/sass/email.scss
 $email-color-brand: #00a0b0;
 $email-radius-card: 0;
-@import '../../vendor/nails/module-email/assets/sass/email';
+
+@import '../../../vendor/nails/module-email/assets/sass/email';
 ```
 
-Rebuild the module's CSS after changing this (`yarn build` in `module-email`, or your app's own build step, then commit the result).
-{% endtab %}
+Only need one component? Import its partial directly instead of the whole manifest — e.g. `.../assets/sass/email/components/button` — and you get just that component, complete with its own media-query and dark-mode rules.
+{% endstep %}
 
-{% tab title="Replace the CSS entirely" %}
-Override the `styles` slot to inject your own compiled stylesheet, cascading over — or replacing — the framework's rules:
+{% step %}
+### Build it with your app's own tooling
+
+This is a plain Sass file that lives in your app, compiled by whatever already builds the rest of your app's CSS. There's no module-specific build step to run, and nothing inside `vendor/nails/module-email` to change or recompile.
+{% endstep %}
+
+{% step %}
+### Load the compiled CSS through the `styles` slot
+
+Override `application/modules/email/views/structure/slots/styles.php` to inline the file you just built:
 
 ```php
 // application/modules/email/views/structure/slots/styles.php
@@ -189,9 +203,9 @@ Override the `styles` slot to inject your own compiled stylesheet, cascading ove
 </style>
 ```
 
-This has to be an inline `<style>` block, since there is no CSS inliner in the pipeline.
-{% endtab %}
-{% endtabs %}
+It has to be an inline `<style>` block rather than a `<link>`, since there is no CSS inliner in the pipeline. This slot renders *after* the module's own default stylesheet, so — depending on whether your build imported the framework's Sass at all — it either cascades a handful of overrides over the top, or replaces the styling outright.
+{% endstep %}
+{% endstepper %}
 
 {% hint style="info" %}
 Sass tokens compile down to literal values rather than CSS custom properties — Outlook's rendering engine has no `var()` support, so this is deliberate rather than an oversight.
