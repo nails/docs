@@ -6,9 +6,13 @@ description: >-
 
 # Email
 
-This driver is the default (and currently only) official second factor. After a successful password login, it emails a short code to the account’s address. The user types that code on `/mfa` to finish signing in.
+This driver emails a short code to the account’s address after a successful password login. The user types that code on `/mfa` to finish signing in.
+
+`requiresEnrollment()` is `false`: having the address on the user record is enough. Adding Email as a method (from `/mfa/manage`, Admin, or `mfa:user:method:add`) just records that they want to use it.
 
 The email is sent with the [Email](../../email.md) module. Delivery, branding, and “view online” behaviour are the same as every other Nails email.
+
+On the setup chooser, `getSetupDescription()` reads: “Receive a verification code at your email address when you sign in.”
 
 ## Installation
 
@@ -24,7 +28,7 @@ This depends on `nails/module-multi-factor-auth`. [Enable the driver](../#enabli
 2. If none is stored, it generates one, saves it on the token, emails it, and shows a success message.
 3. If a code is already stored (the user refreshed the page), it does **not** send again. A warning explains that a code is already on its way.
 4. `validate()` compares the submitted value with the stored code. A mismatch throws `InvalidCodeException` with the configured “invalid code” copy.
-5. **Request another verification code** is available (`canTryAgain()` is `true`). That path mints a new token, so a new email goes out — subject to the [hourly mint cap](../#limits-and-cookies).
+5. **Request another verification code** is available (`canTryAgain()` is `true`). That calls `resend()`, which clears the stored code on the **same** token and runs `preForm()` again so a new email goes out. It is capped per challenge (`MAX_RESENDS_PER_TOKEN`), not by minting another token.
 
 The code lives only on the token. It is never written to the user record.
 

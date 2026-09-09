@@ -124,6 +124,7 @@
 * [Multi-Factor Auth](modules/multi-factor-auth/README.md)
   * [Drivers](modules/multi-factor-auth/drivers/README.md)
     * [Email](modules/multi-factor-auth/drivers/email.md)
+    * [Authenticator](modules/multi-factor-auth/drivers/authenticator.md)
 * [Subscription](modules/subscription.md)
 * [Webhooks](modules/webhooks.md)
 * [Other Modules](modules/other/README.md)
