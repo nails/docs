@@ -6,3 +6,5 @@ description: >-
 
 # Auth
 
+For a second step after password login, see [Multi-Factor Auth](multi-factor-auth/).
+
