@@ -1,2 +1,10 @@
 .DS_Store
 .idea
+
+# Agent skills, installed per CLAUDE.md. Downloaded content and a lockfile for it;
+# the instructions there are to install or update on each session, so there is
+# nothing here worth sharing. Scoped to `skills/` so shared agent configuration,
+# such as .claude/settings.json, can still be committed.
+.agents/skills/
+.claude/skills/
+skills-lock.json
