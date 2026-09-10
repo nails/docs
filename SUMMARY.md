@@ -80,6 +80,7 @@
   * [Building](modules/api/building.md)
   * [Consuming](modules/api/consuming.md)
 * [Auth](modules/auth.md)
+  * [Passkeys](modules/auth/passkeys.md)
 * [Blog](modules/blog/README.md)
   * [Skins](modules/blog/skins/README.md)
     * [Classic](modules/blog/skins/classic.md)
