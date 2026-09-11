@@ -83,3 +83,47 @@ Long-lived secrets (an authenticator seed, a hardware key id) belong on the `Use
 The controller records a failed attempt **before** it calls `validate()`, so parallel submits cannot bypass the attempt cap. `validate()` should only compare the code.
 
 Register the package in `composer.json` `extra.nails`, following the [Email driver](https://github.com/nails/driver-multi-factor-auth-email) as a template, then [enable it](../#enabling-a-driver).
+
+## Interactive drivers
+
+Some factors are not a numeric code the user types — a passkey, for example, runs a browser ceremony and hands back a blob of JSON. Such a driver additionally implements `Nails\MFA\Interfaces\Authentication\Driver\Interactive`:
+
+```php
+namespace Nails\MFA\Interfaces\Authentication\Driver;
+
+use Nails\Auth\Resource\User;
+use Nails\MFA\Resource\Token;
+use stdClass;
+
+interface Interactive
+{
+    public function getChallengeMarkup(Token $oToken): string;
+    public function getSetupMarkup(User $oUser, stdClass $oPending): string;
+    public function loadAssets(): void;
+    public function hidesCodeInput(): bool;
+}
+```
+
+| Method | When it runs |
+| --- | --- |
+| `getChallengeMarkup()` | Rendered inside the verify `<form>` on `/mfa`, in place of the numeric field. Return the markup that starts the ceremony and writes its result into the hidden `code` input |
+| `getSetupMarkup()` | Rendered on the setup-confirm screen (and the `/mfa/manage` pending panel) in place of the QR code. `$oPending` is whatever `setupStart()` returned |
+| `loadAssets()` | Called immediately after the controller's `loadStyles()` — so after its `Asset::clear()` — and **regardless of whether the view is overridden**, because the assets are functional, not cosmetic. Load your JS/CSS here |
+| `hidesCodeInput()` | Return `true` to render the shared `code` input as `<input type="hidden">` (your script fills it) rather than a visible numeric field |
+
+The module only ever checks for the interface with `instanceof`, so this is entirely opt-in: the [Email](email.md) and [Authenticator](authenticator.md) drivers do not implement it and are unaffected.
+
+{% hint style="warning" %}
+Apps that override `mfa/views/form.php`, `setup_confirm.php` or `manage.php` must add the `instanceof Interactive` branch themselves, otherwise an interactive driver has nowhere to render:
+
+```php
+use Nails\MFA\Interfaces\Authentication\Driver\Interactive;
+
+if ($oDriver instanceof Interactive) {
+    echo $oDriver->getChallengeMarkup($oToken);
+}
+echo $oDriver instanceof Interactive && $oDriver->hidesCodeInput()
+    ? form_input('code', set_value('code'), 'id="input-code" type="hidden"')
+    : form_input('code', set_value('code'), 'id="input-code" inputmode="numeric"');
+```
+{% endhint %}
