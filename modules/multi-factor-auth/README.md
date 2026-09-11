@@ -28,6 +28,8 @@ If they are already trusted on this browser (the privileged cookie is still vali
 
 Admin impersonation (`wasAdmin()`) also skips MFA, so staff who “log in as” a user are not challenged.
 
+A **user-verified passkey login skips the challenge** for that sign-in. A passkey is already a phishing-resistant second factor, so re-challenging adds nothing. This is decided per-login from a signal Auth records at sign-in ([`Authentication::getLoginMethod()`](../auth/passkeys.md)); it is not a trusted-device cookie, so a later password login on the same browser is still challenged. Apps that override `mfa/views/form.php` must adopt the `instanceof Interactive` snippet (see [Drivers](drivers/#interactive-drivers)) for the passkey factor to render on `/mfa` at all.
+
 Users can review and change their methods at `/mfa/manage` when their group policy is Optional or Required and there is something they can actually change.
 
 ## Installation
