@@ -84,9 +84,9 @@ The controller records a failed attempt **before** it calls `validate()`, so par
 
 Register the package in `composer.json` `extra.nails`, following the [Email driver](https://github.com/nails/driver-multi-factor-auth-email) as a template, then [enable it](../#enabling-a-driver).
 
-## Interactive drivers
+## Form-fragment drivers
 
-Some factors are not a numeric code the user types — a passkey, for example, runs a browser ceremony and hands back a blob of JSON. Such a driver additionally implements `Nails\MFA\Interfaces\Authentication\Driver\Interactive`:
+Every driver has a UI. Email and Authenticator contribute data (a sent code, a QR SVG, a secret) and the module composes the stock form around it. Some factors cannot fit that form — a passkey, for example, runs a browser ceremony and hands back a blob of JSON. Those drivers additionally implement `Nails\MFA\Interfaces\Authentication\Driver\FormFragment` and inject their own markup:
 
 ```php
 namespace Nails\MFA\Interfaces\Authentication\Driver;
@@ -95,7 +95,7 @@ use Nails\Auth\Resource\User;
 use Nails\MFA\Resource\Token;
 use stdClass;
 
-interface Interactive
+interface FormFragment
 {
     public function getChallengeMarkup(Token $oToken): string;
     public function getSetupMarkup(User $oUser, stdClass $oPending): string;
@@ -114,15 +114,15 @@ interface Interactive
 The module only ever checks for the interface with `instanceof`, so this is entirely opt-in: the [Email](email.md) and [Authenticator](authenticator.md) drivers do not implement it and are unaffected.
 
 {% hint style="warning" %}
-Apps that override `mfa/views/form.php`, `setup_confirm.php` or `manage.php` must add the `instanceof Interactive` branch themselves, otherwise an interactive driver has nowhere to render:
+Apps that override `mfa/views/form.php`, `setup_confirm.php` or `manage.php` must add the `instanceof FormFragment` branch themselves, otherwise a form-fragment driver has nowhere to render:
 
 ```php
-use Nails\MFA\Interfaces\Authentication\Driver\Interactive;
+use Nails\MFA\Interfaces\Authentication\Driver\FormFragment;
 
-if ($oDriver instanceof Interactive) {
+if ($oDriver instanceof FormFragment) {
     echo $oDriver->getChallengeMarkup($oToken);
 }
-echo $oDriver instanceof Interactive && $oDriver->hidesCodeInput()
+echo $oDriver instanceof FormFragment && $oDriver->hidesCodeInput()
     ? form_input('code', set_value('code'), 'id="input-code" type="hidden"')
     : form_input('code', set_value('code'), 'id="input-code" inputmode="numeric"');
 ```
