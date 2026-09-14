@@ -22,9 +22,15 @@ A passkey login where the user verified themselves (biometric, PIN, or screen lo
 
 ## Enabling
 
-Run [migrations](../../core-services/database/migrations.md) so the `user_passkey` table exists, then turn passkeys on in Admin under **Settings → Authentication → Login**.
+Run [migrations](../../core-services/database/migrations.md) so the `user_passkey` table exists, then turn passkeys on with an [environment variable](../../getting-started/configuration.md). The flag is per environment, so production can use passkeys while staging and local leave them off:
 
-Nothing changes for existing users until they register a passkey; password login is untouched.
+```
+AUTH_PASSKEYS_ENABLED=true
+```
+
+Admin under **Settings → Authentication → Login** shows whether they are on, and the current Relying Party ID, but cannot change either.
+
+Nothing changes for existing users until they register a passkey; password login is untouched. Requires `ext-openssl`.
 
 ## What users see
 
@@ -60,15 +66,14 @@ Changing the RP ID invalidates every passkey already registered. Authenticators 
 
 Override it only when you have a good reason, such as sharing passkeys across `app.example.com` and `www.example.com` by setting the RP ID to the registrable parent domain:
 
-```php
-// config/app.php
-define('AUTH_PASSKEY_RP_ID', 'example.com');
+```
+AUTH_PASSKEY_RP_ID=example.com
 ```
 
-Ceremonies are also checked against a list of permitted origins, derived from `BASE_URL` and `SECURE_BASE_URL`. Add more if the app is served from another origin:
+Ceremonies are also checked against a list of permitted origins, derived from `BASE_URL` and `SECURE_BASE_URL`. Add more if the app is served from another origin (JSON is decoded automatically):
 
-```php
-define('AUTH_PASSKEY_ALLOWED_ORIGINS', ['https://app.example.com']);
+```
+AUTH_PASSKEY_ALLOWED_ORIGINS=["https://app.example.com"]
 ```
 
 ## Overridden views

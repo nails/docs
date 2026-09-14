@@ -13,7 +13,7 @@ Auth owns users, groups, sessions, and everything about signing in and out. It p
 | Method | Notes |
 | --- | --- |
 | Password | Email or username, depending on `APP_NATIVE_LOGIN_USING` |
-| [Passkeys](auth/passkeys.md) | WebAuthn; a fingerprint, face, screen lock, or security key instead of a password |
+| [Passkeys](auth/passkeys.md) | WebAuthn; enable with `AUTH_PASSKEYS_ENABLED`. A fingerprint, face, screen lock, or security key instead of a password |
 | Social sign-on | Configured per provider under Settings → Authentication |
 
 For a second step after password login, see [Multi-Factor Auth](multi-factor-auth/). A user-verified [passkey](auth/passkeys.md) login satisfies that second step on its own.
