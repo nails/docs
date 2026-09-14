@@ -73,6 +73,54 @@ The trait provides four helper functions for interacting with the database, thes
 * `$this->lastInsertId()` - returns the ID of the last successful write operation
 * `$this->db()` - returns the raw instance of the `\PDO` class, should you need it
 
+It also provides helpers for inspecting the schema, so that a migration can determine whether its changes are already in place:
+
+* `$this->tableExists()`
+* `$this->getTableColumns()` - returns the table's columns, keyed by column name
+* `$this->columnExists()`
+* `$this->indexExists()`
+* `$this->getTableForeignKeys()` - returns the table's foreign keys, grouped by the constrained column
+* `$this->foreignKeyExists()`
+
+## Repeatable migrations
+
+A migration which implements `Nails\Common\Interfaces\Database\Migration\Repeatable` is evaluated on **every** run of `db:migrate`, regardless of the version recorded for its component. In exchange it must work out for itself whether there is anything to do, and must be safe to execute any number of times.
+
+```php
+namespace App\Database\Migration;
+
+use Nails\Common\Interfaces;
+use Nails\Common\Traits;
+
+class Migration7 implements Interfaces\Database\Migration\Repeatable
+{
+    use Traits\Database\Migration;
+
+    public function execute()
+    {
+        if ($this->columnExists('{{APP_DB_PREFIX}}my_table', 'label')) {
+            return;
+        }
+
+        $this->query('ALTER TABLE `{{APP_DB_PREFIX}}my_table` ADD `label` VARCHAR(150) NOT NULL DEFAULT "";');
+    }
+}
+```
+
+This exists because a migration's reachability would otherwise depend on its number. `db:migrate` records a single integer per component and runs only those migrations numbered above it, which is fine for a single line of development but breaks down where a component is maintained on more than one branch: the same change can carry a different number on each, so an app moving between branches will resume part-way through the *other* branch's sequence and silently skip whatever sits below that point. Marking a migration repeatable takes it out of that race entirely.
+
+{% hint style="warning" %}
+Repeatable migrations run on every migration of every app, forever. Keep the "is there work to do?" check cheap, and put it first.
+{% endhint %}
+
+### Maintaining a component on two branches
+
+Where the same component is maintained on two long-lived branches, apply the following so that apps can move from one to the other:
+
+* Any change which exists on only one branch should be repeatable, otherwise an app arriving from the other branch can skip it.
+* Any change which exists on both branches must be numbered **at least as high** on the branch apps upgrade *to* as it is on the branch they upgrade *from*. Numbering it lower means an incoming app never runs it.
+* Because a shared change can be numbered higher on the destination branch, an arriving app will re-run it. Shared migrations must therefore be guarded with the schema helpers above rather than issuing bare DDL.
+
 {% hint style="warning" %}
 Things to be aware of when using the trait:
 
