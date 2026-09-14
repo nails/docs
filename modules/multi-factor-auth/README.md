@@ -6,7 +6,7 @@ description: >-
 
 # Multi-Factor Auth
 
-The Multi-Factor Auth (MFA) module sits in front of [Auth](../auth.md) and asks for a second proof of identity after a successful password (or social) login. Until that second step succeeds, the user is not actually signed in.
+The Multi-Factor Auth (MFA) module sits in front of [Auth](../auth.md) and asks for a second proof of identity after a successful password login. Until that second step succeeds, the user is not actually signed in.
 
 How the second step works is left to [drivers](drivers/). The module itself handles the login intercept, group policy, enrollment, the verification pages, tokens, rate limits, and “remember this device”.
 

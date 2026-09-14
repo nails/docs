@@ -6,7 +6,7 @@ description: >-
 
 # Auth
 
-Auth owns users, groups, sessions, and everything about signing in and out. It provides password login, social sign-on, registration, password reset, and the admin screens for managing accounts.
+Auth owns users, groups, sessions, and everything about signing in and out. It provides password login, registration, password reset, and the admin screens for managing accounts.
 
 ## Ways to sign in
 
@@ -14,7 +14,6 @@ Auth owns users, groups, sessions, and everything about signing in and out. It p
 | --- | --- |
 | Password | Email or username, depending on `APP_NATIVE_LOGIN_USING` |
 | [Passkeys](auth/passkeys.md) | WebAuthn; enable with `AUTH_PASSKEYS_ENABLED`. A fingerprint, face, screen lock, or security key instead of a password |
-| Social sign-on | Configured per provider under Settings → Authentication |
 
 For a second step after password login, see [Multi-Factor Auth](multi-factor-auth/). A user-verified [passkey](auth/passkeys.md) login satisfies that second step on its own.
 
