@@ -57,3 +57,13 @@ public function delete()
 
 See [User Permissions](../user-permissions.md) for a deeper dive into Admin's permission system.
 
+### Page titles and breadcrumbs
+
+`setTitles()` still sets the header (and document `<title>`) as a list of segments, always prefixed with `Admin`:
+
+```php
+$this->setTitles(['Books', 'Reviews']);
+```
+
+To render a trail where individual crumbs can be links, use `addBreadcrumb()` instead. See [Breadcrumbs](breadcrumbs.md).
+
