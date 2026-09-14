@@ -20,6 +20,14 @@ Bundled with the module is the `DefaultController`. This controller is an abstra
 [default-controller.md](default-controller.md)
 {% endcontent-ref %}
 
+### Breadcrumbs
+
+Admin pages can opt in to a linked breadcrumb trail. Pages that do not push crumbs keep the existing title-based header.
+
+{% content-ref url="breadcrumbs.md" %}
+[breadcrumbs.md](breadcrumbs.md)
+{% endcontent-ref %}
+
 ## Routing
 
 All admin routes live under the `/admin` URL namespace. Controllers supplied by the app (rather than by installed [components](../../../key-concepts/components/)) are accessible under the `/admin/app` namespace.

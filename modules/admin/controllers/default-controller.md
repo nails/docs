@@ -61,6 +61,8 @@ const CONFIG_TITLE_SINGLE = '';
 const CONFIG_TITLE_PLURAL = '';
 ```
 
+`CONFIG_TITLE_PLURAL` is also the label for the index crumb in the [breadcrumb trail](breadcrumbs.md) (`Admin › {plural}`). Override `getIndexBreadcrumbLabel()` if you need a different label.
+
 ### Sidebar
 
 Where to display this controller in the admin sidebar (defaults to `CONFIG_TITLE_PLURAL`) and which icon to use.
@@ -402,6 +404,10 @@ Message displayed to user when an item is successfully copied
 ```php
 const COPY_SUCCESS_MESSAGE = 'Item copied successfully.';
 ```
+
+## Breadcrumbs
+
+`DefaultController` builds an opt-in breadcrumb trail with the index as the tip (`Admin › {plural}`). Create, edit, and sort push an extra crumb. Nested actions can call `setBreadcrumbTrail()` and then `addBreadcrumb()`. See [Breadcrumbs](breadcrumbs.md).
 
 ## Late Configuration
 
