@@ -236,3 +236,7 @@ To change how a code is delivered, write or configure a [driver](drivers/) rathe
 {% content-ref url="drivers/authenticator.md" %}
 [authenticator.md](drivers/authenticator.md)
 {% endcontent-ref %}
+
+## Housekeeping
+
+MFA ships a routine that deletes expired challenge tokens. See [Housekeeping](housekeeping.md).

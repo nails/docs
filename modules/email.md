@@ -254,3 +254,11 @@ It is possible, however to call simple PHP functions in templates using a Mustac
 {% hint style="warning" %}
 If using PHP is unavoidable then email data is available via the `$emailObject->data` variable. If PHP is detected in the template Admin will prevent templates being overridden.
 {% endhint %}
+
+## Housekeeping
+
+The Email module registers `Nails\Email\Housekeeping\Archive` with [housekeeping](housekeeping/). It deletes rows from `email_archive` older than the **Days** setting under Settings → Email → Data Retention (`retention_period`). Set that to `0` to disable deletion; the routine still appears in the list and no-ops.
+
+It runs daily at 02:15. Audit log columns: `id`, `type`, `user_email`, `created`.
+
+The old `email:archive:clean` command remains as a deprecated wrapper that delegates to `housekeeping:run --force`.

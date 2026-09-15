@@ -1,0 +1,35 @@
+---
+description: "Housekeeping routines shipped by the Admin module."
+---
+
+# Housekeeping
+
+Admin registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping.
+
+The old console commands remain as deprecated wrappers that delegate to `housekeeping:run --force`. `admin:dataexport:process` is unchanged.
+
+## Sessions
+
+`Nails\Admin\Housekeeping\Sessions` deletes rows from `admin_session` whose `heartbeat` is older than one hour. It runs every five minutes.
+
+Audit log columns: `id`, `user_id`, `heartbeat`.
+
+The previous command was `admin:session:clean`.
+
+## Data export
+
+`Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export` and, when `download_id` is set, destroys the matching CDN object. Each item is handled in a database transaction, the same as the old cleaner. It runs every fifteen minutes.
+
+Audit log columns: `id`, `download_id`, `expires`.
+
+The previous command was `admin:dataexport:clean`.
+
+## Changelog
+
+`Nails\Admin\Housekeeping\ChangeLog` deletes rows from `admin_changelog` older than `ADMIN_CHANGELOG_RETENTION_DAYS` (default **730**). Set the config value to `0` to disable deletion; the routine still appears in the list and no-ops.
+
+It runs daily.
+
+Audit log columns: `id`, `user_id`, `created`.
+
+There was no cleaner for this table before.

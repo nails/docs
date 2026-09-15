@@ -62,3 +62,7 @@ The CDN module provides some utility console commands for managing objects from 
 {% content-ref url="console.md" %}
 [console.md](console.md)
 {% endcontent-ref %}
+
+## Housekeeping
+
+CDN ships routines that expire tokens and empty old trash. See [Housekeeping](housekeeping.md).
