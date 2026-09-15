@@ -4,9 +4,7 @@ description: "Housekeeping routines shipped by the Admin module."
 
 # Housekeeping
 
-Admin registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping.
-
-The old console commands remain as deprecated wrappers that delegate to `housekeeping:run --force`. `admin:dataexport:process` is unchanged.
+Admin registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping. Run them on demand with `housekeeping:run --routine=…` (add `--dry-run` or `--force` as needed). `admin:dataexport:process` is unchanged.
 
 ## Sessions
 
@@ -14,15 +12,11 @@ The old console commands remain as deprecated wrappers that delegate to `houseke
 
 Audit log columns: `id`, `user_id`, `heartbeat`.
 
-The previous command was `admin:session:clean`.
-
 ## Data export
 
 `Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export` and, when `download_id` is set, destroys the matching CDN object. Each item is handled in a database transaction, the same as the old cleaner. It runs every fifteen minutes.
 
 Audit log columns: `id`, `download_id`, `expires`.
-
-The previous command was `admin:dataexport:clean`.
 
 ## Changelog
 

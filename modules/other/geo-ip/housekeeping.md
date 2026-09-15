@@ -8,8 +8,6 @@ Geo-IP registers the following [housekeeping](../../housekeeping/) routine. It i
 
 ## Cache
 
-`Nails\GeoIp\Housekeeping\Cache` deletes rows from `geoip_cache` older than `CACHE_PERIOD` (`1 HOUR`). It runs hourly. The scheduled routine never truncates the table.
+`Nails\GeoIp\Housekeeping\Cache` deletes rows from `geoip_cache` older than `CACHE_PERIOD` (`1 HOUR`). It runs hourly. It never truncates the table; unexpired rows stay until they age out.
 
 Audit log columns: `id`, `ip`, `created`.
-
-The old `geoip:cache:clear` command remains as a deprecated wrapper. Without `--force` it delegates to the routine. With `--force` it truncates the table (logging the table name and row count) unless `--dry-run` is also set. `--force` is wrapper-only; `housekeeping:run` will not truncate.

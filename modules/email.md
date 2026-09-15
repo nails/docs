@@ -259,6 +259,4 @@ If using PHP is unavoidable then email data is available via the `$emailObject->
 
 The Email module registers `Nails\Email\Housekeeping\Archive` with [housekeeping](housekeeping/). It deletes rows from `email_archive` older than the **Days** setting under Settings → Email → Data Retention (`retention_period`). Set that to `0` to disable deletion; the routine still appears in the list and no-ops.
 
-It runs daily at 02:15. Audit log columns: `id`, `type`, `user_email`, `created`.
-
-The old `email:archive:clean` command remains as a deprecated wrapper that delegates to `housekeeping:run --force`.
+It runs daily at 02:15. Audit log columns: `id`, `type`, `user_email`, `created`. Run it on demand with `housekeeping:run --routine=Nails\\Email\\Housekeeping\\Archive`.

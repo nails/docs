@@ -4,9 +4,7 @@ description: "Housekeeping routines shipped by the CDN module."
 
 # Housekeeping
 
-CDN registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping.
-
-The old `cdn:trash:empty` command remains as a deprecated wrapper that delegates to `housekeeping:run --force`.
+CDN registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping. Run them on demand with `housekeeping:run --routine=…` (add `--dry-run` or `--force` as needed).
 
 ## Tokens
 

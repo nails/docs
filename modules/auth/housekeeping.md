@@ -6,7 +6,7 @@ description: "Housekeeping routines shipped by the Auth module."
 
 Auth registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping.
 
-The old `auth:user:import:clean` command remains as a deprecated wrapper that delegates to `housekeeping:run --force`. `auth:user:import:process` is unchanged.
+Run them on demand with `housekeeping:run --routine=…` (add `--dry-run` or `--force` as needed). `auth:user:import:process` is unchanged.
 
 ## User imports
 
