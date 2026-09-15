@@ -20,3 +20,8 @@ For a second step after password login, see [Multi-Factor Auth](multi-factor-aut
 ## Protecting against brute force
 
 Failed logins are counted per user. After five, the account is locked out for five minutes, and every attempt is delayed briefly to make guessing expensive. A captcha can be required on the login, registration, and password reset forms under Settings → Authentication.
+
+## Housekeeping
+
+Auth ships several cleanup routines. See [Housekeeping](auth/housekeeping.md).
+

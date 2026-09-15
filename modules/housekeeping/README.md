@@ -206,3 +206,18 @@ Fired in the `nails/module-housekeeping` namespace:
 | `HOUSEKEEPING:ROUTINE:AFTER` | After a returned result | The routine and its `Result` |
 | `HOUSEKEEPING:ROUTINE:ERROR` | After `execute()` throws | The routine and the exception |
 | `HOUSEKEEPING:FINISH` | Runner ends | — |
+
+## First-party routines
+
+Official modules ship their own routines under `src/Housekeeping/`. The orchestrator discovers them automatically. What each one removes lives in that module's docs:
+
+- [Admin](../admin/housekeeping.md) — sessions, expired data exports, changelog
+- [Auth](../auth/housekeeping.md) — user imports, API access tokens, legacy 2FA tokens, user events
+- [CDN](../cdn/housekeeping.md) — expired tokens, trash
+- [Email](../email.md#housekeeping) — archive
+- [Geo-code](../other/geo-code/housekeeping.md) — cache
+- [Geo-IP](../other/geo-ip/housekeeping.md) — cache
+- [Multi-Factor Auth](../multi-factor-auth/housekeeping.md) — challenge tokens
+
+The housekeeping module's own `Nails\Housekeeping\Housekeeping\LogFiles` routine is documented with [DeletesFiles](traits/deletes-files.md).
+
