@@ -36,7 +36,7 @@ There was no scheduled cleaner for this table before.
 
 ## User events
 
-`Nails\Auth\Housekeeping\UserEvents` deletes rows from `user_event` older than `AUTH_USER_EVENT_RETENTION_DAYS` (default **730**). Set the config value to `0` to disable deletion; the routine still appears in the list and no-ops.
+`Nails\Auth\Housekeeping\UserEvents` deletes rows from `user_event` older than `AUTH_USER_EVENT_RETENTION_DAYS`. Unset or `0` disables deletion; the routine still appears in the list and no-ops. There is no module default — apps that want a policy set the config.
 
 It runs daily.
 
