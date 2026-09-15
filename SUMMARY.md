@@ -114,6 +114,7 @@
   * [Monitor](modules/cms/monitor.md)
 * [Console](modules/console.md)
 * [Cron](modules/cron.md)
+* [Housekeeping](modules/housekeeping.md)
 * [Email](modules/email.md)
 * [Invoice](modules/invoice/README.md)
   * [Drivers](modules/invoice/drivers/README.md)
