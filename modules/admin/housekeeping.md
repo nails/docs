@@ -14,7 +14,11 @@ Audit log columns: `id`, `user_id`, `heartbeat`.
 
 ## Data export
 
-`Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export` and, when `download_id` is set, destroys the matching CDN object. Each item is handled in a database transaction, the same as the old cleaner. It runs every fifteen minutes.
+`Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export`. The CDN download is removed by `Nails\Admin\Event\Listener\Export\Deleted`, which listens for `DELETED` on the export model so any `delete()` / `deleteMany()` (housekeeping included) cascades the file. The object is destroyed only when no remaining row still references that `download_id`. Identical requests share a file, so the last sibling is the one that removes it. CDN failures are logged and do not fail the delete or the routine.
+
+Dry-run logs the rows and skips `delete()`, so the listener does not run.
+
+It runs every fifteen minutes.
 
 Audit log columns: `id`, `download_id`, `expires`.
 

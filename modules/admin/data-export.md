@@ -219,3 +219,7 @@ This model provides you with the following methods:
 | `getAllFormats(): array`                                                                                                                                                                  | Returns an array of all available Formats.                                                                                                             |
 | `getFormatBySlug(string $sSlug): ?Format`                                                                                                                                                 | Returns a single Format object.                                                                                                                        |
 | <p><code>export(</code></p><p>    <code>string $sSourceSlug,</code></p><p>    <code>string $sFormatSlug,</code></p><p>    <code>array $aOptions = []</code></p><p><code>): int</code></p> | Executes a DateExport source then passes to a DataExport format. Once complete the resulting file is uploaded to the CDN and the object's ID returned. |
+
+## Cleanup
+
+Completed exports expire and are removed by [housekeeping](housekeeping.md#data-export). Deleting an export row through the model also destroys its CDN download, but only when no other export still points at that file (identical requests share one object). CDN failures are logged; they do not resurrect the row.
