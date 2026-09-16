@@ -121,6 +121,7 @@
   * [Official traits](modules/housekeeping/traits/README.md)
     * [DeletesModelRows](modules/housekeeping/traits/deletes-model-rows.md)
     * [DeletesFiles](modules/housekeeping/traits/deletes-files.md)
+    * [ArchivesFiles](modules/housekeeping/traits/archives-files.md)
     * [TruncatesTable](modules/housekeeping/traits/truncates-table.md)
 * [Email](modules/email.md)
 * [Invoice](modules/invoice/README.md)
