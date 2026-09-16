@@ -8,7 +8,7 @@ Admin registers the following [housekeeping](../housekeeping/) routines. They ar
 
 ## Sessions
 
-`Nails\Admin\Housekeeping\Sessions` deletes rows from `admin_session` whose `heartbeat` is older than one hour. It runs every five minutes.
+`Nails\Admin\Housekeeping\Sessions` deletes rows from `admin_session` whose `heartbeat` is older than `ADMIN_SESSION_RETENTION` seconds (default **3600**). It runs every five minutes.
 
 Audit log columns: `id`, `user_id`, `heartbeat`.
 

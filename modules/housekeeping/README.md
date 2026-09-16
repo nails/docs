@@ -207,6 +207,26 @@ Fired in the `nails/module-housekeeping` namespace:
 | `HOUSEKEEPING:ROUTINE:ERROR` | After `execute()` throws | The routine and the exception |
 | `HOUSEKEEPING:FINISH` | Runner ends | — |
 
+## Configuration
+
+Retention is config-only. There is no Admin UI for these values — set them in `.env` or via `Config::set()`. Unset keys fall back to the module default. Do not call `Config::default()` for these keys: that defines a constant, which makes `Config::isSet()` permanently true and would skip any remaining fallback.
+
+| Key | Default | Module |
+|---|---|---|
+| `EMAIL_ARCHIVE_RETENTION_DAYS` | `0` (disabled) | [Email](../email.md#housekeeping) |
+| `ADMIN_CHANGELOG_RETENTION_DAYS` | `0` (disabled) | [Admin](../admin/housekeeping.md) |
+| `ADMIN_SESSION_RETENTION` | `3600` | [Admin](../admin/housekeeping.md) |
+| `AUTH_USER_EVENT_RETENTION_DAYS` | `0` (disabled) | [Auth](../auth/housekeeping.md) |
+| `AUTH_USER_IMPORT_STALE_CLAIM` | `900` | [Auth](../auth/housekeeping.md) |
+| `AUTH_USER_IMPORT_DRAFT_TTL` | `86400` | [Auth](../auth/housekeeping.md) |
+| `AUTH_USER_IMPORT_RETENTION` | `2592000` | [Auth](../auth/housekeeping.md) |
+| `CDN_TRASH_RETENTION` | `180` (days) | [CDN](../cdn/housekeeping.md) |
+| `LOG_RETENTION` | `180` (days) | [DeletesFiles](traits/deletes-files.md) |
+| `GEO_IP_CACHE_PERIOD` | `3600` | [Geo-IP](../other/geo-ip/housekeeping.md) |
+| `GEO_CODE_CACHE_PERIOD` | `15552000` (180 days) | [Geo-code](../other/geo-code/housekeeping.md) |
+
+The Email archive previously used the `retention_period` app setting. That value is still honoured when `EMAIL_ARCHIVE_RETENTION_DAYS` is not set, but using it emits a deprecation notice. Config always wins when both are present.
+
 ## First-party routines
 
 Official modules ship their own routines under `src/Housekeeping/`. The orchestrator discovers them automatically. What each one removes lives in that module's docs:
