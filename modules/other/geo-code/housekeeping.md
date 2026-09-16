@@ -8,6 +8,6 @@ Geo-code registers the following [housekeeping](../../housekeeping/) routine. It
 
 ## Cache
 
-`Nails\GeoCode\Housekeeping\Cache` deletes rows from `geocode_cache` older than `CACHE_PERIOD` (`6 MONTH`). It runs hourly. It never truncates the table; unexpired rows stay until they age out.
+`Nails\GeoCode\Housekeeping\Cache` deletes rows from `geocode_cache` older than `GEO_CODE_CACHE_PERIOD` seconds (default **15552000**, 180 days). It runs hourly. It never truncates the table; unexpired rows stay until they age out. The same value is used when looking up a cached result, so the service and the routine cannot drift.
 
 Audit log columns: `id`, `address`, `created`.

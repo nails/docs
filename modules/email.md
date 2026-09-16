@@ -257,6 +257,8 @@ If using PHP is unavoidable then email data is available via the `$emailObject->
 
 ## Housekeeping
 
-The Email module registers `Nails\Email\Housekeeping\Archive` with [housekeeping](housekeeping/). It deletes rows from `email_archive` older than the **Days** setting under Settings → Email → Data Retention (`retention_period`). Set that to `0` to disable deletion; the routine still appears in the list and no-ops.
+The Email module registers `Nails\Email\Housekeeping\Archive` with [housekeeping](housekeeping/). It deletes rows from `email_archive` older than `EMAIL_ARCHIVE_RETENTION_DAYS`. Unset or `0` disables deletion; the routine still appears in the list and no-ops.
+
+The previous **Days** setting under Settings → Email → Data Retention (`retention_period`) is still honoured when the config key is not set, but using it emits a deprecation notice. Config always wins when both are present.
 
 It runs daily at 02:15. Audit log columns: `id`, `type`, `user_email`, `created`. Run it on demand with `housekeeping:run --routine=Nails\\Email\\Housekeeping\\Archive`.
