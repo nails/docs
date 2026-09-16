@@ -6,7 +6,7 @@ description: >-
 
 # Housekeeping
 
-The housekeeping module is an orchestrator for cleanup work: truncating or deleting stale rows, removing files from disk, and any other residue a module or app needs to tidy up.
+The housekeeping module is an orchestrator for cleanup work: truncating or deleting stale rows, archiving or removing files from disk, and any other residue a module or app needs to tidy up.
 
 A single cron task (`housekeeping:run`, every minute) asks the orchestrator which routines are due and executes them in-process so the audit trail stays in one place. Unlike [cron](../cron.md) tasks, a housekeeping routine **is** the work — there is no separate console command to bind.
 
@@ -156,6 +156,10 @@ Each trait defines `execute()`, so you cannot `use` more than one on the same cl
 [deletes-files.md](traits/deletes-files.md)
 {% endcontent-ref %}
 
+{% content-ref url="traits/archives-files.md" %}
+[archives-files.md](traits/archives-files.md)
+{% endcontent-ref %}
+
 {% content-ref url="traits/truncates-table.md" %}
 [truncates-table.md](traits/truncates-table.md)
 {% endcontent-ref %}
@@ -177,7 +181,7 @@ nails housekeeping:run --routine=App\\Housekeeping\\AnonymiseGuests
 | `housekeeping:run --routine=X` | That routine if it is enabled (due-ness is ignored) |
 | `housekeeping:run --routine=X --force` | That routine even if it is disabled |
 
-`--routine` accepts a fully-qualified class name or the short class name. `--dry-run` writes the same audit lines with `dry_run=true` and does not delete, unlink, or truncate. Last-run metadata is not updated on a dry-run.
+`--routine` accepts a fully-qualified class name or the short class name. `--dry-run` writes the same audit lines with `dry_run=true` and does not delete, unlink, gzip, or truncate. Last-run metadata is not updated on a dry-run.
 
 ## Audit log
 
@@ -221,6 +225,7 @@ Retention is config-only. There is no Admin UI for these values — set them in 
 | `AUTH_USER_IMPORT_DRAFT_TTL` | `86400` | [Auth](../auth/housekeeping.md) |
 | `AUTH_USER_IMPORT_RETENTION` | `2592000` | [Auth](../auth/housekeeping.md) |
 | `CDN_TRASH_RETENTION` | `180` (days) | [CDN](../cdn/housekeeping.md) |
+| `LOG_ARCHIVE` | `14` (days) | [ArchivesFiles](traits/archives-files.md) |
 | `LOG_RETENTION` | `180` (days) | [DeletesFiles](traits/deletes-files.md) |
 | `GEO_IP_CACHE_PERIOD` | `3600` | [Geo-IP](../other/geo-ip/housekeeping.md) |
 | `GEO_CODE_CACHE_PERIOD` | `15552000` (180 days) | [Geo-code](../other/geo-code/housekeeping.md) |
@@ -239,5 +244,10 @@ Official modules ship their own routines under `src/Housekeeping/`. The orchestr
 - [Geo-IP](../other/geo-ip/housekeeping.md) — cache
 - [Multi-Factor Auth](../multi-factor-auth/housekeeping.md) — challenge tokens
 
-The housekeeping module's own `Nails\Housekeeping\Housekeeping\LogFiles` routine is documented with [DeletesFiles](traits/deletes-files.md).
+The housekeeping module's own log routines are documented with the traits they use:
+
+- `Nails\Housekeeping\Housekeeping\LogFilesArchive` — [ArchivesFiles](traits/archives-files.md); compresses `*.php` older than `LOG_ARCHIVE` days (default 14). Set `LOG_ARCHIVE=0` to keep logs uncompressed until they are purged.
+- `Nails\Housekeeping\Housekeeping\LogFiles` — [DeletesFiles](traits/deletes-files.md); deletes `*.php` and `*.php.gz` older than `LOG_RETENTION` days (default 180).
+
+Together they take log files **hot** (uncompressed, easy to parse) → **cold** (gzipped, kept in case) → **purged**. The two thresholds are independent: a file past retention is deleted even if it was never archived, and `LOG_ARCHIVE=0` leaves everything hot until purge. Both run at midnight; discovery order runs the purge first so files already past retention are not compressed only to be deleted the next day.
 

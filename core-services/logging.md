@@ -29,6 +29,16 @@ $oLogger->line('Another line to write');
 
 Log files have the date in the title, so logs naturally distribute across days, making it easier to find the logs you need and for log rotation.
 
+The housekeeping module then takes those files through three states:
+
+| State | What | Default |
+|---|---|---|
+| Hot | Uncompressed `*.php`, easy to `grep` / tail | Newer than `LOG_ARCHIVE` (14 days) |
+| Cold | Gzipped `*.php.gz`, kept in case | Older than `LOG_ARCHIVE`, newer than `LOG_RETENTION` |
+| Purged | Deleted | Older than `LOG_RETENTION` (180 days) |
+
+Set `LOG_ARCHIVE=0` to skip compression. Both keys are independent; see [Housekeeping](../modules/housekeeping/README.md).
+
 ## Alternative logs
 
 The Logger service is dedicated to writing to the general app log. If you need to write to another log file then you can create a new instance of the Logger factory and customise it to your needs (internally, the Logger service does this).

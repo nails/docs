@@ -1,12 +1,12 @@
 ---
 description: >-
   Official traits that supply execute() for common cleanup jobs: deleting model
-  rows, unlinking files, and truncating tables.
+  rows, unlinking files, archiving files, and truncating tables.
 ---
 
 # Official traits
 
-A housekeeping routine only has to implement `execute()`. For the three jobs that come up constantly, official traits provide that method so the class can describe *what* to clean rather than *how*.
+A housekeeping routine only has to implement `execute()`. For the jobs that come up constantly, official traits provide that method so the class can describe *what* to clean rather than *how*.
 
 Use a trait when the work matches one of these patterns. Keep a custom `execute()` when it does not.
 
@@ -14,9 +14,10 @@ Use a trait when the work matches one of these patterns. Keep a custom `execute(
 |---|---|---|
 | [`DeletesModelRows`](deletes-model-rows.md) | Stale rows in one model should be deleted | `model()`, `where()` |
 | [`DeletesFiles`](deletes-files.md) | Files on disk matching a name pattern should be unlinked | `directory()` |
+| [`ArchivesFiles`](archives-files.md) | Files on disk matching a name pattern should be gzip-compressed | `directory()` |
 | [`TruncatesTable`](truncates-table.md) | A whole table should be emptied | `model()` |
 
-All three:
+All four:
 
 * Honour `--dry-run` (audit lines are written; nothing is mutated).
 * Go through `Factory::service('Deleter', \Nails\Housekeeping\Constants::MODULE_SLUG)`.
@@ -30,6 +31,10 @@ All three:
 [deletes-files.md](deletes-files.md)
 {% endcontent-ref %}
 
+{% content-ref url="archives-files.md" %}
+[archives-files.md](archives-files.md)
+{% endcontent-ref %}
+
 {% content-ref url="truncates-table.md" %}
 [truncates-table.md](truncates-table.md)
 {% endcontent-ref %}
@@ -39,7 +44,7 @@ All three:
 Write `execute()` yourself when:
 
 * More than one model or directory is involved.
-* The work is not a delete / unlink / truncate (archive, anonymise, rebuild, …).
+* The work is not a delete / unlink / gzip / truncate (anonymise, rebuild, …).
 * You need to branch on data that the trait does not expose.
 
 Call the `Deleter` service from that custom `execute()` for the parts that *are* a common job:
