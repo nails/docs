@@ -96,7 +96,7 @@ For the button to work, the surrounding `<form>` needs `id="login-form"` and `da
 
 Editing a user shows a **Passkeys** tab listing their credentials, when each was added and last used, and a checkbox to revoke. Revoking is immediate and cannot be undone; the user must register the device again.
 
-Registrations and revocations are recorded as `did_add_passkey` and `did_remove_passkey` user events, and a passkey login is recorded as `did_log_in` with `provider` set to `passkey`.
+Registrations and revocations are recorded as `did_add_passkey` and `did_remove_passkey` user events, and a passkey login is recorded as `did_log_in` with `provider` set to `passkey`. They also fire live events (`Events::USER_DID_ADD_PASSKEY` and `Events::USER_DID_REMOVE_PASSKEY`) so other components can react without this module knowing they exist. Both pass the user ID and the `Resource\User\Passkey`; on revoke the passkey is the in-memory snapshot from before the delete.
 
 ## API
 
