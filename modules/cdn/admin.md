@@ -22,10 +22,14 @@ Nails\Cdn\Helper\Form::FIELD_OBJECT_PICKER
 
 ```php
 echo form_field_cdn_object_picker([
-  'key'   => 'cover_id',  
-  'label' => 'Cover Image'
+    'key'      => 'cover_id',
+    'label'    => 'Cover Image',
+    'required' => true,
+    'tip'      => 'Used on listing cards and the detail header.',
 ]);
 ```
+
+`tip` and `required` behave like the [common form helpers](../../../key-concepts/form-fields.md): the tip sits beside the label, and required paints an accessible asterisk (not HTML5 `required`). The same applies to `form_field_cdn_object_picker_multi()` and `form_field_cdn_object_picker_multi_with_label()`.
 
 A CDN object picker looks like this and opens the Media Manager in a modal when the `Browse` button is clicked:
 

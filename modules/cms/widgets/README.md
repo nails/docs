@@ -83,9 +83,12 @@ The editor view is optional, but if provided is a means for you to offer the use
 echo form_field_textarea([
     'key'     => 'sBody',
     'label'   => 'Body',
-    'default' => $sBody
+    'default' => $sBody,
+    'tip'     => 'Shown on the front end as the widget body.',
 ]);
 ```
+
+`form_field*()` helpers pick up the usual [admin chrome](../../admin/forms.md) (tips, required markers, [toggles](../../admin/javascript/toggles.md), [Select](../../admin/javascript/select.md)). Prefer them over raw `<input>` so the widget editor matches the rest of admin.
 
 ### Render View
 

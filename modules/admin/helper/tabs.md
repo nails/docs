@@ -1,39 +1,45 @@
 ---
-description: An overview of how to sue Admin's tab helper to generate tabbed content.
+description: An overview of how to use Admin's tab helper to generate tabbed content.
 ---
 
 # Tabs
 
-Generate tabs using the `tabs()` static method on the `\Nails\Admin\Helper` class.
+Generate tabs using the `tabs()` static method on the `\Nails\Admin\Helper` class. The helper emits the markup the [Tabs plugin](../javascript/tabs.md) binds to.
 
 ## Defining Tabs
 
-The `tabs()` method accepts an array of tab definitions as it's first argument, eachd efinitoon contains two properties: `label` and `content`.
+The `tabs()` method accepts an array of tab definitions as its first argument. Each definition contains two properties: `label` and `content`.
 
-The `label` property is what will appear in the tab itself, where as the `content` property is the contents which is revealed when the tab is clicked.
+The `label` property is what will appear in the tab itself, whereas the `content` property is the contents which is revealed when the tab is clicked.
 
 ```php
 echo \Nails\Admin\Helper::tabs([
     [
         'label'   => 'Tab Number 1',
-        'content' => 'The contents of tab 1'
+        'content' => 'The contents of tab 1',
     ],
     [
         'label'   => 'Tab Number 2',
-        'content' => 'The contents of tab 2'
+        'content' => 'The contents of tab 2',
     ],
-t]);
+]);
 ```
 
 {% hint style="info" %}
 The `content` element can also be a `\Closure` with the closure's return value being what is rendered.
 {% endhint %}
 
+## Fieldset wrap
+
+If a tab’s content does not already contain a `<fieldset>`, the helper wraps it in one (with no legend). That gives DefaultController tab pages the same card chrome as a fieldset you wrote yourself. Content that already includes a fieldset is left alone.
+
 ## Tab Groups
 
-If multiple tabs appear on a page they can be grouped using the second argument of the `tabs` method. Tabs which share a group are controlled together, i.e clicking `Tab Number 2` in any group will activate that tab in all groups.
+If multiple tabs appear on a page they can be grouped using the second argument of the `tabs` method. Tabs which share a group are controlled together, i.e. clicking `Tab Number 2` in any group will activate that tab in all groups.
 
 By default, all tab groups work independently.
+
+For a pill switcher under a heavier workspace row, add `tabs--segmented` on the `<ul>` yourself — `Helper::tabs()` emits the default card style. See [Tabs (JS)](../javascript/tabs.md#segmented-tabs).
 
 ## Tabs and POST
 

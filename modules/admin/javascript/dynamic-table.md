@@ -69,7 +69,9 @@ The body is the target element where rows will be rendered, this should be given
 
 ### Add a row
 
-Any element with the class `js-admin-dynamic-table__add` will, when clicked, add a new row to the body. Typically this will be in the `<tfoot>`:
+Any element with the class `js-admin-dynamic-table__add` will, when clicked, add a new row to the body. Put it in `<tfoot>` (not under the table). Vendor views label the control **+ Add Item**.
+
+Admin dynamic tables also use `table table-striped table-hover table-responsive table-rounded`. See [Forms](../forms.md#tables) for table chrome.
 
 ```markup
 <table class="js-admin-dynamic-table">
@@ -77,8 +79,8 @@ Any element with the class `js-admin-dynamic-table__add` will, when clicked, add
     <tfoot>
         <tr>
             <td colspan="2">
-                <button class="js-admin-dynamic-table__add">
-                    Add Row
+                <button class="btn btn-sm btn-primary js-admin-dynamic-table__add">
+                    &plus; Add Item
                 </button>
             </td>
         </tr>
@@ -110,6 +112,25 @@ Any element contained within a row with the class `js-admin-dynamic-table__remov
     </script>
 </table>
 ```
+
+## The helper
+
+For DefaultController fields, set the type to `Nails\Admin\Helper\Form::FIELD_DYNAMIC_TABLE` or call `form_field_dynamic_table()`:
+
+```php
+echo form_field_dynamic_table([
+    'key'      => 'items',
+    'label'    => 'Items',
+    'sortable' => true,
+    'columns'  => [
+        'Label'       => '<input type="text" name="items[{{index}}][label]" value="{{label}}" />',
+        'Description' => '<input type="text" name="items[{{index}}][description]" value="{{description}}" />',
+    ],
+    'default'  => $aItems,
+]);
+```
+
+That helper emits the table (including `tfoot` “+ Add Item”) inside a standard field row.
 
 ## Populating with data
 

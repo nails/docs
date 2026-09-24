@@ -257,7 +257,7 @@ The base model exposes the `describeFields()` method for describing a model's fi
 
 The `describeFields` method will do its best to guess the data type and validation rules based on the data available to it. For example, if a field is a `varchar(150)` it will apply a `MAX_LENGTH[150]` validation rule.
 
-There will be times, however when you need to override the behaviour, or add additional information (like validation rules, classes, info, or fieldsets). This can all be done by overloading the `describeFields` method in your model and setting properties as required.
+There will be times, however when you need to override the behaviour, or add additional information (like validation rules, classes, tips, info, or fieldsets). This can all be done by overloading the `describeFields` method in your model and setting properties as required.
 
 ```php
 namespace App\Model;
@@ -311,7 +311,11 @@ The following `Field` properties are available to edit:
 | `options[]`    | Key/value options for `select` type fields.                                                                         |
 | `max_length`   | The maximum length of the field.                                                                                    |
 | `class`        | A class to apply to the field (used in [Admin](../../../modules/admin/)).                                           |
-| `info`         | Any extra info, hints, or tips to show to to show to the user (used in [Admin](../../../modules/admin/)).           |
+| `tip`          | Short plain guidance beside the label (used in [Admin](../../../modules/admin/)). See [Form fields](../../form-fields.md). |
+| `info`         | Longer copy under the control; may contain HTML (used in [Admin](../../../modules/admin/)).                         |
+| `info_class`   | Extra class on the info element (e.g. `alert alert-info`).                                                          |
+| `required`     | Visual required marker. Not HTML5 `required`.                                                                       |
+| `readonly`     | Marks the field read-only; admin shows a padlock on the control.                                                    |
 | `fieldset`     | Which fieldset/tab to group the field in (used in [Admin](../../../modules/admin/)).                                |
 | `data`         | A key/value array of `data-` attributes to set (used in [Admin](../../../modules/admin/)).                          |
 

@@ -11,10 +11,14 @@ This plugin allows you to bind the visibility of DOM elements based on the value
 This functionality is achieved through the use of the `data-revealer` data attribute, where the value is an arbitrary string which groups controls and elements together.
 
 {% hint style="info" %}
-Revealer groups must be unique, i.e two controls must cannot share the same group name.
+Revealer groups must be unique, i.e. two controls cannot share the same group name.
 {% endhint %}
 
-For elements which are not a control (i.e not a `checkbox`, or `select`) then the second data attribute `data-reveal-on` is required. This attribute specifies for which value the element should be shown (it is hidden on all non-matching values).
+For elements which are not a control (i.e. not a `checkbox` or `select`) then `data-reveal-on` and/or `data-reveal-not-on` is required. `data-reveal-on` specifies for which value the element should be shown (it is hidden on all non-matching values).
+
+{% hint style="warning" %}
+A `<select>` cannot be a revealed *element* — the plugin skips selects and checkboxes when binding targets. Wrap the field in a `div`, or use `form_field()` with both `revealer` and `reveal-on` in `data` so the attributes sit on the `.field` container.
+{% endhint %}
 
 ## The Control
 
@@ -60,6 +64,10 @@ For `checkbox` controls, the only valid values are `true` and `false`.
     <!-- shown when the selected option is 1 or 3, not 2 -->
 </div>
 ```
+
+### `data-reveal-not-on`
+
+The inverse of `data-reveal-on`: the element is shown when the control’s value is **not** one of the listed values. It can be combined with `data-reveal-on`; matching either set shows the element.
 
 ### Multiple groups (OR)
 
