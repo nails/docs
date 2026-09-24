@@ -103,11 +103,19 @@ When using `refreshUi` event remember that it might be called multiple times, en
 
 The following plugins are bundled with admin, and are available for you to use:
 
+* [Character Count](character-count.md) – live `current / max` caption on text fields
+* [Collapsible Fieldsets](collapsible-fieldsets.md) – fold opted-in fieldset cards
+* [Confirm](confirm.md) – confirm a navigation with the [Modal](modal.md) plugin
 * [Copy to Clipboard](copy-to-clipboard.md) – easily copy text to the user's clipboard
 * [Dynamic Table](dynamic-table.md) – render dynamic tables easily
+* [Modal](modal.md) – programmatic and markup-driven dialogs
+* [Modalize](modalize.md) – edit a hidden chunk of a form in a modal
 * [Notes](notes.md) – keep notes about anything
 * [Repeater](repeater.md) – build repeatable blocks using templates
+* [Revealer](revealer.md) – show and hide fields from a checkbox or select
+* [Screen Tabs](screen-tabs.md) – top-level workspaces on an edit screen
 * [Searcher](searcher.md) – populate your forms with entities
 * [Select](select.md) – searchable drop downs
 * [Sortable](sortable.md) – allow drag and drop sorting
 * [Tabs](tabs.md) – build tabbed interfaces
+* [Toggles](toggles.md) – native boolean switches

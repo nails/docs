@@ -258,7 +258,7 @@ Any additional header buttons to add to the edit page.
 const CONFIG_EDIT_HEADER_BUTTONS = [];
 ```
 
-Specify a specific order for fieldsets
+Specify a specific order for fieldsets. Each fieldset becomes a [tab](../helper/tabs.md) on the edit screen. Fields that are not already inside a `<fieldset>` are wrapped in one so they get card chrome. The sticky [save bar](../forms.md#floating-save-bar) is rendered automatically.
 
 ```php
 const CONFIG_EDIT_FIELDSET_ORDER = [];

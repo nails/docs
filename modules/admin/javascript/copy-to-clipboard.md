@@ -6,7 +6,7 @@ description: >-
 
 # Copy to Clipboard
 
-This module copies text to the user's clipboard when an element is clicked (typically a button). To use, add the class `js-copy-to-clipboard` to elements. The actual text to copy is defined using the `data-clipbopard-text` attribute.
+This plugin copies text to the user's clipboard when an element is clicked (typically a button). Add the class `js-copy-to-clipboard` to the element. The text to copy is `data-clipboard-text`.
 
 ```markup
 <button
@@ -16,3 +16,5 @@ This module copies text to the user's clipboard when an element is clicked (typi
    Copy to Clipboard
 </button>
 ```
+
+A short “Copied” bubble appears above the button. The plugin rebinds on `refreshUi()`, so buttons created inside a [Modal](modal.md) work once the body is set.
