@@ -45,6 +45,37 @@ Each element which is to bind to a control must define a `data-revealer` attribu
 For `checkbox` controls, the only valid values are `true` and `false`.
 {% endhint %}
 
+### Multiple values (OR)
+
+`data-reveal-on` (and `data-reveal-not-on`) may list more than one value, separated by commas (or `data-reveal-delimiter`). The element is shown if the control’s current value matches **any** of them.
+
+```markup
+<select data-revealer="type">
+    <option value="1">Page</option>
+    <option value="2">Redirect</option>
+    <option value="3">iFrame</option>
+</select>
+
+<div data-revealer="type" data-reveal-on="1,3">
+    <!-- shown when the selected option is 1 or 3, not 2 -->
+</div>
+```
+
+### Multiple groups (OR)
+
+An element may list more than one group in `data-revealer`, separated by commas (or `data-reveal-delimiter` if you have changed the delimiter). The element is shown if **any** of those groups currently matches `data-reveal-on`.
+
+Controls still need unique group names; only the target element lists multiple groups.
+
+```markup
+<input type="checkbox" data-revealer="password">
+<input type="checkbox" data-revealer="user-details">
+
+<div data-revealer="password,user-details" data-reveal-on="true">
+    <!-- shown when either checkbox is checked -->
+</div>
+```
+
 ## A working example
 
 ### Checkbox
