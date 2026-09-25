@@ -11,7 +11,7 @@ Typical edit screens use:
 * [DefaultController](controllers/default-controller.md) or a custom view
 * [Helper::tabs()](helper/tabs.md) for section tabs, or [screen tabs](javascript/screen-tabs.md) for top-level workspaces
 * [Form fields](../../../key-concepts/form-fields.md) (`form_field()`, booleans, dropdowns)
-* [Floating save](forms.md#floating-save-bar) via `Helper::floatingControls()`
+* [Floating save](forms.md#floating-save-bar) via `Helper::floatingControls()`, with optional [unsaved-changes](javascript/unsaved-changes.md)
 
 ## Housekeeping
 

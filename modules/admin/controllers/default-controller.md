@@ -302,6 +302,14 @@ Enable or disable the "Notes" feature
 const EDIT_ENABLE_NOTES = true;
 ```
 
+### Unsaved changes
+
+Whether to stamp `data-unsaved-changes` on the edit form and save bar. When true (the default), the [Unsaved Changes](../javascript/unsaved-changes.md) plugin shows a chip beside Save if the form is dirty.
+
+```php
+const EDIT_UNSAVED_CHANGES_ENABLED = true;
+```
+
 ### Changelog
 
 Whether to record updates in the admin change log

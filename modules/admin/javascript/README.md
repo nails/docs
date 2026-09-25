@@ -119,3 +119,4 @@ The following plugins are bundled with admin, and are available for you to use:
 * [Sortable](sortable.md) – allow drag and drop sorting
 * [Tabs](tabs.md) – build tabbed interfaces
 * [Toggles](toggles.md) – native boolean switches
+* [Unsaved Changes](unsaved-changes.md) – dirty-form notice beside Save
