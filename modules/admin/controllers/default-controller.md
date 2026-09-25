@@ -25,6 +25,10 @@ class Book extends DefaultController
 }
 ```
 
+{% hint style="info" %}
+Generate this boilerplate with `nails make:controller:admin Book`. It writes the controller to `src/Admin/Controller/`.
+{% endhint %}
+
 ## What you get
 
 | Action  | URL                   | Available when                                                                        |

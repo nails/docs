@@ -13,7 +13,7 @@ Admin doesn't hold a list of screens. Any installed component (your app or a mod
 Every request under `/admin` goes through one route:
 
 1. `Nails\Admin\Routes` sends every `/admin/...` URL to Admin's router.
-2. The router checks that the user is an admin, meaning their user group has at least one admin permission. Anyone else gets the unauthorised response.
+2. The router checks the request's IP against the optional [IP whitelist](user-permissions.md#restricting-admin-by-ip). If the IP isn't allowed, it returns a 404. It then checks that the user is an admin, meaning their user group has at least one admin permission. Anyone else gets the unauthorised response.
 3. The `Controller` service looks through every installed component for classes in its `Admin\Controller` namespace, matches one to the URL, and calls the method.
 4. The controller extends [`Base`](controllers/base-controller.md), which loads Admin's CSS, JS and helpers. It then renders a view inside the admin chrome using [`Helper::loadView()`](helper/).
 
@@ -74,4 +74,4 @@ New to the module? Start with [Your First Admin Page](getting-started.md).
 | `ADMIN_SESSION_RETENTION`        | `3600`  | Seconds before an idle admin session row is pruned. See [Housekeeping](housekeeping.md#sessions).         |
 | `ADMIN_CHANGELOG_RETENTION_DAYS` | unset   | Days to keep change log rows. Unset or `0` keeps them forever. See [Housekeeping](housekeeping.md#changelog). |
 
-The branding colours for the admin UI can be changed under _Settings → Admin_.
+_Settings → Admin_ holds the branding colours for the admin UI and the [IP whitelist](user-permissions.md#restricting-admin-by-ip).

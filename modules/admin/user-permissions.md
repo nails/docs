@@ -10,6 +10,8 @@ Admin access is set per [user group](../auth.md). Each group has an access contr
 * A user is a **super user** if their group has the `Nails\Admin\Admin\Permission\SuperUser` permission. Super users pass every permission check.
 * Everyone else can do what their group's permissions allow.
 
+Before any of that, Admin can also restrict access by IP address. See [Restricting admin by IP](#restricting-admin-by-ip).
+
 You grant permissions when editing a user group in admin. The list there is built from every permission class discovered in the installed components, grouped by component.
 
 ## Defining a permission
@@ -116,3 +118,35 @@ class Migration5 implements Interfaces\Database\Migration
 ```
 
 The trait supplies the migration's `execute()` method, which rewrites each user group's ACL. Names that aren't in the map are left alone. Mapping a name to an empty string removes that permission from every group.
+
+## Restricting admin by IP
+
+_Settings → Admin → IP Whitelist_ limits admin to a list of IP addresses. Enter one entry per line, or separate entries with commas. Each entry is either an exact address (`203.0.113.7`) or an IPv4 CIDR range (`203.0.113.0/24`). IPv6 ranges aren't supported, so list IPv6 addresses individually. The form shows your current IP address, so you can include it.
+
+When the list isn't empty, a request from any other address:
+
+* gets a **404** from `/admin`, even for a logged-in super user, so admin looks as if it doesn't exist
+* fails authentication on admin API endpoints: those that extend `Nails\Admin\Controller\BaseApi` or use the `Nails\Admin\Traits\Api\RestrictToAdmin` trait
+
+An empty list means no IP restriction.
+
+To check an address in your own code, use the `Permission` service:
+
+```php
+use Nails\Admin\Constants;
+use Nails\Admin\Service\Permission;
+use Nails\Factory;
+
+/** @var Permission $oPermission */
+$oPermission = Factory::service('Permission', Constants::MODULE_SLUG);
+
+$oPermission->isIpAllowed();              // The current request's IP
+$oPermission->isIpAllowed('203.0.113.7'); // A specific IP
+$oPermission->getIpWhitelist();           // The configured entries
+```
+
+{% hint style="warning" %}
+If you save a list that doesn't include your own address, you'll be locked out of admin straight away. To recover, clear the `whitelist` app setting in the `nails/module-admin` group directly in the database, or from a machine whose IP is on the list.
+{% endhint %}
+
+The whitelist only covers admin. Front-end routes and other modules' APIs are unaffected. If you need to restrict a whole site, do it at the web server or proxy.
