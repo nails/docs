@@ -21,6 +21,7 @@ echo \Nails\Admin\Helper::floatingControls([
     'save' => [
         'text' => 'Save Changes',
     ],
+    'unsaved_changes' => true,
     'notes' => [
         'enabled'  => true,
         'model'    => 'Book',
@@ -33,6 +34,8 @@ echo \Nails\Admin\Helper::floatingControls([
     ],
 ]);
 ```
+
+`unsaved_changes` opts the enclosing form into the [Unsaved Changes](javascript/unsaved-changes.md) plugin (a chip beside Save, plus `beforeunload` while dirty). You can also put `data-unsaved-changes` on the `<form>` yourself. [DefaultController](controllers/default-controller.md) edit screens enable this by default.
 
 A [screen-tab](javascript/screen-tabs.md) panel with `screen-tabs__panel--no-save` hides the bar while that workspace is active.
 

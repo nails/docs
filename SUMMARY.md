@@ -85,6 +85,7 @@
     * [Sortable](modules/admin/javascript/sortable.md)
     * [Tabs](modules/admin/javascript/tabs.md)
     * [Toggles](modules/admin/javascript/toggles.md)
+    * [Unsaved Changes](modules/admin/javascript/unsaved-changes.md)
 * [API](modules/api/README.md)
   * [Building](modules/api/building.md)
   * [Consuming](modules/api/consuming.md)
