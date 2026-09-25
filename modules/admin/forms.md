@@ -4,7 +4,7 @@ description: Admin form chrome — fieldsets, tables, floating save, tips, and r
 
 # Forms
 
-Admin forms share a small set of conventions on top of the [common form helpers](../../../key-concepts/form-fields.md). This page covers the chrome; the helpers themselves live in `nails/common`.
+Admin forms share a small set of conventions on top of the [common form helpers](../../key-concepts/form-fields.md). This page covers the chrome; the helpers themselves live in `nails/common`.
 
 ## Fieldsets
 
@@ -55,7 +55,7 @@ Cells are vertically centred. `tfoot` is white so [dynamic-table](javascript/dyn
 
 ## Tips and required
 
-Short guidance belongs in `tip` (question-mark beside the label). Longer copy, HTML, and alerts belong in `info`. See [Form fields](../../../key-concepts/form-fields.md).
+Short guidance belongs in `tip` (question-mark beside the label). Longer copy, HTML, and alerts belong in `info`. See [Form fields](../../key-concepts/form-fields.md).
 
 `required => true` paints an asterisk with an accessible name via `Field::requiredMarker()`. It does **not** set HTML5 `required`, so draft saves are not blocked by the browser.
 

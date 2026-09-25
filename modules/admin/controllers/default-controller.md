@@ -6,26 +6,50 @@ description: >-
 
 # Default Controller
 
-`Nails\Admin\Controller\DefaultController` is a highly configurable preset which will generate a CRUD interface bound to a specific model. Its purpose is to abstract the views, validation, and saving of model items.
+`Nails\Admin\Controller\DefaultController` is a configurable base class that builds a CRUD interface for a model. It handles the views, validation and saving, so a typical controller is just a list of constants.
 
-To use this in your application's admin controller, they must extend it and define, at minimum, the constant `CONFIG_MODEL_NAME`.
+Extend it in `src/Admin/Controller/` and set, at minimum, `CONFIG_MODEL_NAME`:
 
 ```php
-namespace App\Admin\App;
+<?php
+// src/Admin/Controller/Book.php
+
+namespace App\Admin\Controller;
 
 use Nails\Admin\Controller\DefaultController;
 
-class Books extends DefaultController
+class Book extends DefaultController
 {
-    const CONFIG_MODEL_NAME = 'Books';
+    const CONFIG_MODEL_NAME     = 'Book';
+    const CONFIG_MODEL_PROVIDER = 'app';
 }
 ```
 
 {% hint style="info" %}
-Quickly generate admin DefaultController controllers using the console:
-
-`nails make:controller:admin`
+Generate this boilerplate with `nails make:controller:admin Book`. It writes the controller to `src/Admin/Controller/`.
 {% endhint %}
+
+## What you get
+
+| Action  | URL                   | Available when                                                                        |
+| ------- | --------------------- | ------------------------------------------------------------------------------------- |
+| Browse  | `{base}`              | Always. Paginated, searchable if the model is `Searchable`, and filterable.           |
+| Create  | `{base}/create`       | `CONFIG_CAN_CREATE`                                                                   |
+| Edit    | `{base}/edit/{id}`    | `CONFIG_CAN_EDIT`                                                                     |
+| Delete  | `{base}/delete/{id}`  | `CONFIG_CAN_DELETE`. A soft delete if the model supports it.                          |
+| Restore | `{base}/restore/{id}` | `CONFIG_CAN_RESTORE`, for soft-deleted items.                                         |
+| Destroy | `{base}/destroy/{id}` | `CONFIG_CAN_DESTROY`. Permanently removes the item.                                   |
+| Copy    | `{base}/copy/{id}`    | `CONFIG_CAN_COPY`, and the model uses the `Copyable` trait.                           |
+| Sort    | `{base}/sort`         | `CONFIG_CAN_SORT`, and the model uses the `Sortable` trait.                           |
+| View    | The item's own URL    | `CONFIG_CAN_VIEW`, and the resource has a `url` property or a `getUrl()` method.      |
+
+Each action also checks its `CONFIG_PERMISSION_*` constant (see [Permissions](#permissions)), and its button is hidden when the user can't use it.
+
+The create and edit forms are built from the model's field definitions (`describeFields()`). Each fieldset becomes a [tab](../helper/tabs.md), and the [save bar](../forms.md#floating-save-bar), [notes](../javascript/notes.md) and [unsaved-changes](../javascript/unsaved-changes.md) warning come built in. Changes are recorded in the [change log](#changelog).
+
+The controller also adapts to the traits the model uses. `Sortable` adds a "Defined Order" sort option. `Localised` adds a locale column and per-locale buttons. `Publishable` adds a publish-state filter. `Nestable` keeps its ordering and breadcrumb columns out of the forms.
+
+If you want different markup, put a view with the same name (`index.php`, `edit.php` or `order.php`) in your controller's [view directory](./#views). Admin uses it instead of the built-in one.
 
 ## Configuring
 
@@ -46,11 +70,30 @@ const CONFIG_MODEL_PROVIDER = 'app';
 
 ### Permissions
 
-The permission string to use when checking permissions; if not provided then no permissions required.
+Each action can require a [permission](../user-permissions.md). Set the constant to a permission class name. `null` means any admin user can do it.
 
 ```php
-const CONFIG_PERMISSION = '';
+const CONFIG_PERMISSION_BROWSE  = null;
+const CONFIG_PERMISSION_CREATE  = null;
+const CONFIG_PERMISSION_EDIT    = null;
+const CONFIG_PERMISSION_VIEW    = null;
+const CONFIG_PERMISSION_DELETE  = null;
+const CONFIG_PERMISSION_DESTROY = null;
+const CONFIG_PERMISSION_RESTORE = null;
+const CONFIG_PERMISSION_COPY    = null;
+const CONFIG_PERMISSION_SORT    = null;
 ```
+
+For example:
+
+```php
+use App\Admin\Permission;
+
+const CONFIG_PERMISSION_BROWSE = Permission\Book\Browse::class;
+const CONFIG_PERMISSION_EDIT   = Permission\Book\Edit::class;
+```
+
+If the user doesn't have `CONFIG_PERMISSION_BROWSE`, the controller adds nothing to the sidebar.
 
 ### Title
 
@@ -72,15 +115,21 @@ const CONFIG_SIDEBAR_GROUP = '';
 const CONFIG_SIDEBAR_ICON  = '';
 ```
 
-The format for the sidebar link
+The format for the sidebar link. `%s` is replaced with `CONFIG_TITLE_PLURAL`.
 
 ```php
 const CONFIG_SIDEBAR_FORMAT = 'Manage %s';
 ```
 
+Extra keywords that match this group when a user filters the sidebar.
+
+```php
+const CONFIG_SIDEBAR_SEARCH_TERMS = [];
+```
+
 ### Base URL
 
-The base URL for this controller
+The base URL for this controller. Leave it empty to use `static::url()`, which is almost always what you want.
 
 ```php
 const CONFIG_BASE_URL = '';
@@ -112,10 +161,28 @@ Specify whether the controller supports item deletion
 const CONFIG_CAN_DELETE = true;
 ```
 
+Specify whether the controller supports permanently destroying items
+
+```php
+const CONFIG_CAN_DESTROY = true;
+```
+
 Specify whether the controller supports item restoration
 
 ```php
 const CONFIG_CAN_RESTORE = true;
+```
+
+Specify whether the controller supports copying items (the model must use `Copyable`)
+
+```php
+const CONFIG_CAN_COPY = true;
+```
+
+Specify whether the controller supports manual ordering (the model must use `Sortable`)
+
+```php
+const CONFIG_CAN_SORT = true;
 ```
 
 ### Index View
@@ -125,7 +192,6 @@ The fields to show on the index view. Column name on the left, property name on 
 ```php
 const CONFIG_INDEX_FIELDS = [
     'Label'       => 'label',
-    'Created'     => 'created',
     'Modified'    => 'modified',
     'Modified By' => 'modified_by',
 ];
@@ -193,6 +259,20 @@ The ID to give the index page
 
 ```php
 const CONFIG_INDEX_PAGE_ID = '';
+```
+
+Show a [notes](../javascript/notes.md) button on each row, optionally with a count of existing notes
+
+```php
+const CONFIG_INDEX_NOTES_ENABLE = false;
+const CONFIG_INDEX_NOTES_COUNT  = false;
+```
+
+Extra markup to render above and below the index table
+
+```php
+const CONFIG_INDEX_HTML_HEADER = '';
+const CONFIG_INDEX_HTML_FOOTER = '';
 ```
 
 The sorting options to give the user on the index view:
@@ -270,6 +350,28 @@ The ID to give the edit page
 const CONFIG_EDIT_PAGE_ID = '';
 ```
 
+Extra markup to render above and below the edit form
+
+```php
+const CONFIG_EDIT_HTML_HEADER = '';
+const CONFIG_EDIT_HTML_FOOTER = '';
+```
+
+Warn the user, instead of overwriting, if someone else saved the item after they opened it
+
+```php
+const EDIT_MODIFIED_CHECK_ENABLED = true;
+```
+
+### Delete and destroy
+
+Additional data to pass into the `getAll` call when loading the item to delete or destroy
+
+```php
+const CONFIG_DELETE_DATA  = [];
+const CONFIG_DESTROY_DATA = [];
+```
+
 ### Sorting
 
 {% hint style="info" %}
@@ -296,11 +398,13 @@ const CONFIG_SORT_COLUMNS = [];
 
 ### Notes
 
-Enable or disable the "Notes" feature
+Enable or disable [notes](../javascript/notes.md) in the edit screen's save bar
 
 ```php
-const EDIT_ENABLE_NOTES = true;
+const CONFIG_EDIT_NOTES_ENABLE = true;
 ```
+
+For the index equivalent, see `CONFIG_INDEX_NOTES_ENABLE` under [Index View](#index-view).
 
 ### Unsaved changes
 
@@ -318,12 +422,6 @@ Whether to record updates in the admin change log
 const CHANGELOG_ENABLED = true;
 ```
 
-The name to use when creating changelog items, defaults to the resource class name
-
-```php
-const CHANGELOG_ENTITY_NAME = null;
-```
-
 An array of fields to ignore when processing change log updates
 
 ```php
@@ -337,13 +435,7 @@ const CHANGELOG_FIELDS_IGNORE = [
 ];
 ```
 
-An array of fields to redact/mask when processing changelog updates
-
-```php
-const CHANGELOG_FIELDS_REDACT = [
-    'password',
-];
-```
+Entries are browsable under _Logs → Change Log_. To prune old entries, see [Housekeeping](../housekeeping.md#changelog).
 
 ### User feedback messages
 
@@ -365,7 +457,7 @@ Message displayed to user when an item is successfully updated
 const EDIT_SUCCESS_MESSAGE = 'Item updated successfully. %s';
 ```
 
-Message displayed to user when an item fails to be created
+Message displayed to user when an item fails to be updated
 
 ```php
 const EDIT_ERROR_MESSAGE = 'Failed to update item.';
@@ -381,6 +473,18 @@ Message displayed to user when an item fails to be deleted
 
 ```php
 const DELETE_ERROR_MESSAGE = 'Failed to delete item.';
+```
+
+Message displayed to user when an item is successfully destroyed
+
+```php
+const DESTROY_SUCCESS_MESSAGE = 'Item destroyed successfully.';
+```
+
+Message displayed to user when an item fails to be destroyed
+
+```php
+const DESTROY_ERROR_MESSAGE = 'Failed to destroy item.';
 ```
 
 Message displayed to user when an item is successfully restored
@@ -413,6 +517,30 @@ Message displayed to user when an item is successfully copied
 const COPY_SUCCESS_MESSAGE = 'Item copied successfully.';
 ```
 
+## Hooks
+
+To add behaviour around saving without replacing whole actions, override these protected methods. They do nothing by default, except `beforeEdit()`, which runs the "modified since you opened it" check. If you override `beforeEdit()`, call `parent::beforeEdit($oItem)`.
+
+| Hook                                                     | Called                                               |
+| -------------------------------------------------------- | ---------------------------------------------------- |
+| `beforeCreateAndEdit($sMode, ?Resource $oItem)`          | Before a create or an edit, after validation passes. |
+| `beforeCreate()` / `beforeEdit(?Resource $oItem)`        | Before a create or an edit.                          |
+| `afterCreateAndEdit($sMode, Resource $oNew, ?Resource $oOld)` | After a create or an edit is saved.             |
+| `afterCreate(Resource $oNew)` / `afterEdit(Resource $oNew, ?Resource $oOld)` | After a create or an edit is saved. |
+| `beforeCopy(Resource $oItem)` / `afterCopy(Resource $oNew, Resource $oOld)` | Around a copy.                       |
+| `beforeDelete(Resource $oItem)` / `afterDelete(Resource $oItem)`   | Around a delete.                           |
+| `beforeDestroy(Resource $oItem)` / `afterDestroy(Resource $oItem)` | Around a destroy.                          |
+
+`$sMode` is `static::EDIT_MODE_CREATE` or `static::EDIT_MODE_EDIT`. Throwing an exception from a `before*` hook stops the save, and the message is shown to the user.
+
+Other useful extension points:
+
+* `runFormValidation(string $sMode, array $aOverrides = [])` adds or changes validation rules.
+* `getPostObject(): array` changes the data passed to the model's `create()` or `update()`.
+* `loadEditViewData(?Resource $oItem)` adds data for the edit view.
+* `indexDropdownFilters()` and `indexCheckboxFilters()` add [index filters](#filters).
+* `addIndexHeaderButton()`, `addEditHeaderButton()` and `addIndexRowButton()` add buttons.
+
 ## Breadcrumbs
 
 `DefaultController` builds an opt-in breadcrumb trail with the index as the tip (`Admin › {plural}`). Create, edit, and sort push an extra crumb. Nested actions can call `setBreadcrumbTrail()` and then `addBreadcrumb()`. See [Breadcrumbs](breadcrumbs.md).
@@ -428,7 +556,7 @@ For example, if you wish to show a column which contains dynamic information abo
 // Expand the book reviews
 const CONFIG_INDEX_DATA = ['expand' => ['reviews']];
 
-//    Define the initial column layout, with palceholder for `Reviews`
+// Define the initial column layout, with a placeholder for `Reviews`
 const CONFIG_INDEX_FIELDS = [
     'Label'      => 'label',
     'Reviews'    => '',
@@ -439,8 +567,8 @@ const CONFIG_INDEX_FIELDS = [
 // Overwrite the `Reviews` column
 public function __construct()
 {
-    parent:__construct();
-    $this->aConfig['INDEX_FIELDS']['Reviews'] => function($oBook) {
+    parent::__construct();
+    $this->aConfig['INDEX_FIELDS']['Reviews'] = function($oBook) {
     
         $iTotal = 0;
         foreach ($oBook->reviews->data as $oReview) {
@@ -468,7 +596,7 @@ The DefaultController offers two types of filters which can be applied to the in
 
 ![Filter area showing a checkbox filter](<../../../.gitbook/assets/Screenshot 2020-05-26 12.36.37.png>)
 
-Both flavours are defined using the `IndexFilter` factory, depending on whether you want the filter be a dropdown or a checkbox then place the `IndexFilter` definition in the controller's `indexDropdownFilters` or `indexcheckboxFilters` method respectively:
+Both flavours are defined using the `IndexFilter` factory, depending on whether you want the filter be a dropdown or a checkbox then place the `IndexFilter` definition in the controller's `indexDropdownFilters` or `indexCheckboxFilters` method respectively:
 
 ```php
 protected function indexDropdownFilters(): array
@@ -518,16 +646,16 @@ const CONFIG_INDEX_ROW_BUTTONS = [
         // The button's value/label
         'label' => 'The button label',
         
-        // The button's URL, item properties can be
-        // substituted in using Mustache syntax.
-        'url' => 'edit/{{id}}'
+        // The button's URL, relative to the controller. Item
+        // properties can be substituted in using Mustache syntax.
+        'url' => 'edit/{{id}}',
         
         // Additional classes to apply to the button
-        'class' => 'btn-primary'
+        'class' => 'btn-primary',
         
-        // Permission required in order to render
+        // Permission class required in order to render
         // the button
-        'permission' => 'edit'
+        'permission' => Permission\Book\Edit::class,
         
         // Any additional attributes to apply to
         // the button

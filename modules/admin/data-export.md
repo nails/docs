@@ -1,12 +1,16 @@
 # Data Export
 
-Exporting Data (or "reports" as they are often known) is simple using Admin's Data Export system. Simply navigate to `Utilities › Export Data`, select the source you'd like and the format you'd like it in.
+Admin's Data Export system produces downloadable files, often called reports, from your data. An admin user goes to _Utilities › Export Data_, chooses a **source** (what to export) and a **format** (CSV, JSON and so on), and submits the form.
+
+Exports don't run during the request. The request is queued, and the `admin:dataexport:process` command runs it: `nails/module-cron` schedules that command every minute. When the file is ready it's uploaded to the CDN and the user gets an email with a download link. The _Export Data_ page lists recent exports and their status.
+
+Using the _Export Data_ screen needs the `Nails\Admin\Admin\Permission\Utilities\DataExport\Generate` [permission](user-permissions.md).
 
 ## Sources
 
 Sources are classes which return data from the database and return it in a consistent way which is understood by the [format](data-export.md#formats) classes. Any component in a Nails application can provide a source.
 
-Sources should have the namespace `App\DataExport\Source` and implement the `Nails\Admin\Interfaces\DataExport\Source` interface.
+Admin discovers sources in each component's `Admin\DataExport\Source` namespace. For your app, that's `App\Admin\DataExport\Source` in `src/Admin/DataExport/Source/`. Sources implement `Nails\Admin\Interfaces\DataExport\Source`.
 
 {% hint style="info" %}
 Use the console to quickly create Data Export Sources:
@@ -17,7 +21,10 @@ Use the console to quickly create Data Export Sources:
 The example below shows a simple export which exports items from the `Book` model.
 
 ```php
-namespace App\DataExport\Source;
+<?php
+// src/Admin/DataExport/Source/Books.php
+
+namespace App\Admin\DataExport\Source;
 
 use App\Model;
 use App\Resource;
@@ -40,6 +47,11 @@ class Books implements Source
     public function getDescription(): string
     {
         return 'Exports all books';
+    }
+
+    public function getDescriptionExtended(): string
+    {
+        return 'One row per book, including unpublished books.';
     }
     
     public function getOptions(): array
@@ -184,11 +196,47 @@ public function execute($aOptions = [])
 }
 ```
 
-The above will result in a zip file being created containing two files: `book` and `book_review`.
+The above will result in a zip file being created containing two files: `books` and `reviews`.
 
 ### Options
 
-@todo - complete this
+`getOptions()` returns form fields, as arrays in the same shape the [form field helpers](../../key-concepts/form-fields.md) accept. They're shown when the user picks the source, and the submitted values are passed to `execute()` as `$aOptions`, keyed by each field's `key`:
+
+```php
+public function getOptions(): array
+{
+    return [
+        [
+            'key'     => 'status',
+            'label'   => 'Status',
+            'type'    => 'dropdown',
+            'options' => [
+                ''          => 'All',
+                'PUBLISHED' => 'Published',
+                'DRAFT'     => 'Draft',
+            ],
+        ],
+    ];
+}
+
+public function execute($aOptions = [])
+{
+    $aData = [];
+    if (!empty($aOptions['status'])) {
+        $aData['where'][] = ['status', $aOptions['status']];
+    }
+
+    // ...
+}
+```
+
+### Enabling and disabling
+
+Return `false` from `isEnabled()` to hide a source, for example when a feature is turned off or the user lacks a [permission](user-permissions.md).
+
+### Slugs
+
+Every source and format has a slug made from the component slug and the class name relative to the `Source` or `Format` namespace, for example `app::Books` or `nails/module-admin::Csv`. Use these slugs with the console commands and the `DataExport` service.
 
 ## Formats
 
@@ -196,7 +244,75 @@ Formatters take the data returned by a [source](data-export.md#sources) and comp
 
 By default, Nails provides CSV and a JSON formatters.
 
-If you need to create a new formatter, then you should do so in the `App\DataExport\Format` namespace, and it should implement the `Nails\Admin\Interfaces\DataExport\Format` interface.
+To add a format, create a class in `App\Admin\DataExport\Format` (`src/Admin/DataExport/Format/`) that implements `Nails\Admin\Interfaces\DataExport\Format`. It needs:
+
+| Method                                  | Purpose                                                                           |
+| --------------------------------------- | --------------------------------------------------------------------------------- |
+| `getLabel()`                            | The name shown to the user.                                                       |
+| `getDescription()`                      | A short description.                                                              |
+| `getFileExtension()`                    | The extension for generated files, for example `csv`.                             |
+| `execute($oSourceResponse, $rFile)`     | Write the `SourceResponse`'s data to the open file handle `$rFile`.               |
+
+`Nails\Admin\Admin\DataExport\Format\Csv` and `Json` in the Admin module are worked examples.
+
+## Scheduled exports
+
+To send a report to people on a schedule, add a class in `App\Admin\DataExport\Schedule` (`src/Admin/DataExport/Schedule/`) that implements `Nails\Admin\Interfaces\DataExport\Schedule`:
+
+```php
+<?php
+// src/Admin/DataExport/Schedule/WeeklyBooks.php
+
+namespace App\Admin\DataExport\Schedule;
+
+use Nails\Admin\Interfaces\DataExport\Schedule;
+use Nails\Auth\Constants as AuthConstants;
+use Nails\Factory;
+
+class WeeklyBooks implements Schedule
+{
+    public function getCronExpression(): string
+    {
+        return '0 7 * * 1';     // 07:00 every Monday
+    }
+
+    public function getSource(): string
+    {
+        return 'app::Books';
+    }
+
+    public function getFormat(): string
+    {
+        return 'nails/module-admin::Csv';
+    }
+
+    public function getOptions(): array
+    {
+        return ['status' => 'PUBLISHED'];
+    }
+
+    public function getUsers(): array
+    {
+        return Factory::model('User', AuthConstants::MODULE_SLUG)->getByIds([1, 2]);
+    }
+
+    public function getTTL(): int
+    {
+        return 604800;          // Keep the file for a week
+    }
+}
+```
+
+Each time `admin:dataexport:process` runs, it queues one export per user for any schedule that is due. The export is then processed like any other. `getTTL()` is how long, in seconds, the export is kept before [housekeeping](housekeeping.md#data-export) removes it.
+
+## Console commands
+
+| Command                     | Purpose                                                                     |
+| --------------------------- | --------------------------------------------------------------------------- |
+| `make:admin:dataexport`     | Create a new source in `src/Admin/DataExport/Source/`.                      |
+| `admin:dataexport:list`     | List the available sources and formats, with their slugs.                   |
+| `admin:dataexport:run`      | Run a source immediately.                                                   |
+| `admin:dataexport:process`  | Queue due scheduled exports, then process pending ones. Runs every minute from cron. |
 
 ## Exporting Data Programatically
 
@@ -210,7 +326,7 @@ use Nails\Factory;
 $oDataExport = Factory::service('DataExport', 'nails/module-admin');
 ```
 
-This model provides you with the following methods:
+The service provides the following methods:
 
 | Method                                                                                                                                                                                    | Description                                                                                                                                            |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -218,7 +334,14 @@ This model provides you with the following methods:
 | `getSourceBySlug(string $sSlug): ?Source`                                                                                                                                                 | Returns a single Source object.                                                                                                                        |
 | `getAllFormats(): array`                                                                                                                                                                  | Returns an array of all available Formats.                                                                                                             |
 | `getFormatBySlug(string $sSlug): ?Format`                                                                                                                                                 | Returns a single Format object.                                                                                                                        |
-| <p><code>export(</code></p><p>    <code>string $sSourceSlug,</code></p><p>    <code>string $sFormatSlug,</code></p><p>    <code>array $aOptions = []</code></p><p><code>): int</code></p> | Executes a DateExport source then passes to a DataExport format. Once complete the resulting file is uploaded to the CDN and the object's ID returned. |
+| <p><code>export(</code></p><p>    <code>string $sSourceSlug,</code></p><p>    <code>string $sFormatSlug,</code></p><p>    <code>array $aOptions = []</code></p><p><code>): int</code></p> | Executes a DataExport source then passes to a DataExport format. Once complete the resulting file is uploaded to the CDN and the object's ID returned. |
+
+## Configuration
+
+| Constant                      | Default | Purpose                                                          |
+| ----------------------------- | ------- | ---------------------------------------------------------------- |
+| `ADMIN_DATA_EXPORT_RETENTION` | `3600`  | How long, in seconds, an export requested through admin is kept. |
+| `ADMIN_DATA_EXPORT_URL_TTL`   | `300`   | How long, in seconds, a signed download link stays valid.        |
 
 ## Cleanup
 

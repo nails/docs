@@ -1,69 +1,135 @@
 ---
-description: All admin controllers must extend the base controller.
+description: All admin controllers extend the base controller.
 ---
 
 # Base Controller
 
-All admin controllers must extend `Nails\Admin\Controller\Base`. Admin controllers route in a similar way to application controllers, but also usually implement to additional methods: `announce` and `permissions`.
-
-### Announcing Controllers
-
-The controller's `annoucne` method explicitly announces the controller's presence and returns an array of `actions` which the controller would like to register in admin's sidebar:
+Every admin controller extends `Nails\Admin\Controller\Base`, either directly or through [`DefaultController`](default-controller.md). `Base` is abstract and implements `Nails\Admin\Interfaces\Controller`, so the one method you must write is `announce()`.
 
 ```php
-public static function announce()
+<?php
+// src/Admin/Controller/Report.php
+
+namespace App\Admin\Controller;
+
+use App\Admin\Permission;
+use Nails\Admin\Constants;
+use Nails\Admin\Controller\Base;
+use Nails\Admin\Factory\Nav;
+use Nails\Factory;
+
+class Report extends Base
 {
-    return Factory::factory('Nav', 'nails/module-admin')    
-        ->setLabel('Books')
-        ->setIcon('fa-book')
-        ->addAction('Manage Books', 'index')
-        ->addAction('Manage Reviews', 'reviews');
-}
-```
+    public static function announce(): Nav|array|null
+    {
+        /** @var Nav $oNav */
+        $oNav = Factory::factory('Nav', Constants::MODULE_SLUG);
+        $oNav
+            ->setLabel('Reports')
+            ->setIcon('fa-chart-bar');
 
-This announcement specifies that the `Manage Books` action (which points to this controller's `index` method) should be registered to the `Books` sidebar group; it also specifies a second action for managing reviews.
+        if (userHasPermission(Permission\Report\View::class)) {
+            $oNav->addAction('Sales Report', 'sales');
+        }
 
-{% hint style="info" %}
-This method can return an array of `Nav` objects if you wish to add actions to multiple sidebar groups.
-{% endhint %}
-
-### Controller Permissions
-
-By default, controllers are available to all admin users. If you wish to restrict your controller's functionality to specific user groups then you can return an array of permissions in the controller's `permissions` method:
-
-```php
-public static function permissions(): array
-{
-    return [
-        'browse' => 'Can manage books',
-        'edit'   => 'Can edit books',
-        'delete' => 'Can delete books',
-    ];
-}
-```
-
-The above permissions are made available when managing user group permissions and you may test if a user has the permission using the `userHasPermission` function, passing in a string in the format `admin:app:{controller}:{permission}` as the argument.
-
-```php
-public function delete()
-{
-    if (!userHasPermission('admin:ap:books:delete')) {
-        show404();
+        return $oNav;
     }
-    
-    // ... deletion logic
+
+    public function sales(): void
+    {
+        if (!userHasPermission(Permission\Report\View::class)) {
+            unauthorised();
+        }
+
+        $this
+            ->addBreadcrumb('Reports')
+            ->addBreadcrumb('Sales')
+            ->setData('aRows', $this->getSalesData())
+            ->loadView('sales');
+    }
 }
 ```
 
-See [User Permissions](../user-permissions.md) for a deeper dive into Admin's permission system.
+## What the constructor does
+
+When Admin creates your controller, `Base::__construct()`:
+
+1. Fires the `ADMIN:STARTUP` [event](../../../core-services/event.md).
+2. Links `$this->data` to the main controller's data, so anything you set there reaches the view.
+3. Loads the optional app configs `application/config/admin.php` and `application/modules/admin/config/admin.php`.
+4. Clears any front-end assets, then loads Admin's own CSS and JS and the bundled libraries (jQuery, jQuery UI, Select2, CKEditor, Knockout, Moment, Mustache, Bootstrap, Font Awesome).
+5. Loads anything components ask for in their `autoload` data (see below).
+6. Fires the `ADMIN:READY` event.
+
+If you override the constructor, call `parent::__construct()` first.
+
+### Autoloading assets from a component
+
+A component can ask Admin to load services, models, helpers, JS or CSS on every admin page by adding an `autoload` block for `nails/module-admin` to the `extra.nails.data` section of its `composer.json`:
+
+```json
+{
+    "extra": {
+        "nails": {
+            "data": {
+                "nails/module-admin": {
+                    "autoload": {
+                        "helpers": ["book"],
+                        "assets": {
+                            "js": ["admin.min.js"],
+                            "css": ["admin.min.css"],
+                            "jsInline": ["console.log('admin ready');"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+The supported keys are `services`, `models`, `helpers`, and `assets` with `js`, `jsInline`, `css` and `cssInline`.
+
+## Announcing
+
+`announce()` is static. Admin calls it on every discovered controller to build the sidebar, so keep it cheap. It returns a `Nav`, an array of `Nav` objects (to add links to several groups), or `null` (no sidebar presence). [Controllers](./#the-sidebar-announce) covers groups, icons, alerts and ordering.
+
+## Permissions
+
+Admin doesn't check permissions for you on a `Base` controller. Check them yourself, in two places:
+
+* in `announce()`, so users only see links they can use
+* in each method, because a user might visit a URL directly
+
+Permissions are classes that implement `Nails\Admin\Interfaces\Permission`. Test them with `userHasPermission()`:
+
+```php
+if (!userHasPermission(Permission\Report\View::class)) {
+    unauthorised();
+}
+```
+
+See [User Permissions](../user-permissions.md) for how to define them.
+
+## Methods
+
+| Method                                        | Purpose                                                                                                          |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `static url(string $sUrl = ''): string`       | The absolute URL to this controller, with `$sUrl` appended. Follows [overrides](./#overriding-a-modules-controller). |
+| `setTitles(array $aTitles)`                   | Sets the page header and document `<title>`. `Admin` is always added as the first segment.                       |
+| `addBreadcrumb(string $sLabel, ?string $sUrl)` | Adds a crumb to a linked [breadcrumb trail](breadcrumbs.md). Replaces the title-based header.                   |
+| `prependBreadcrumb(string $sLabel, ?string $sUrl)` | Inserts a crumb straight after the `Admin` root crumb.                                                      |
+| `setData(string $sKey, mixed $mValue)`        | Makes a variable available to the view.                                                                          |
+| `loadView(string $sView)`                     | A chainable shortcut for [`Helper::loadView()`](../helper/).                                                     |
+
+Every method except `url()` returns `$this`, so calls can be chained.
 
 ### Page titles and breadcrumbs
 
-`setTitles()` still sets the header (and document `<title>`) as a list of segments, always prefixed with `Admin`:
+`setTitles()` sets the header as a list of segments:
 
 ```php
-$this->setTitles(['Books', 'Reviews']);
+$this->setTitles(['Books', 'Reviews']);   // Admin › Books › Reviews
 ```
 
-To render a trail where individual crumbs can be links, use `addBreadcrumb()` instead. See [Breadcrumbs](breadcrumbs.md).
-
+To make individual segments into links, use `addBreadcrumb()` instead. See [Breadcrumbs](breadcrumbs.md).

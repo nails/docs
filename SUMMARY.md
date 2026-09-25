@@ -57,7 +57,7 @@
 ## Modules
 
 * [Admin](modules/admin/README.md)
-  * [Housekeeping](modules/admin/housekeeping.md)
+  * [Your First Admin Page](modules/admin/getting-started.md)
   * [Controllers](modules/admin/controllers/README.md)
     * [Base Controller](modules/admin/controllers/base-controller.md)
     * [Default Controller](modules/admin/controllers/default-controller.md)
@@ -66,8 +66,8 @@
   * [Helper](modules/admin/helper/README.md)
     * [Tabs](modules/admin/helper/tabs.md)
   * [Forms](modules/admin/forms.md)
-  * [Data Export](modules/admin/data-export.md)
   * [Dashboard Widgets](modules/admin/dashboard-widgets.md)
+  * [Data Export](modules/admin/data-export.md)
   * [Javascript](modules/admin/javascript/README.md)
     * [Character Count](modules/admin/javascript/character-count.md)
     * [Collapsible Fieldsets](modules/admin/javascript/collapsible-fieldsets.md)
@@ -86,6 +86,7 @@
     * [Tabs](modules/admin/javascript/tabs.md)
     * [Toggles](modules/admin/javascript/toggles.md)
     * [Unsaved Changes](modules/admin/javascript/unsaved-changes.md)
+  * [Housekeeping](modules/admin/housekeeping.md)
 * [API](modules/api/README.md)
   * [Building](modules/api/building.md)
   * [Consuming](modules/api/consuming.md)

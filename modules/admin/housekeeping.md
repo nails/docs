@@ -4,7 +4,13 @@ description: "Housekeeping routines shipped by the Admin module."
 
 # Housekeeping
 
-Admin registers the following [housekeeping](../housekeeping/) routines. They are discovered automatically when `nails/module-housekeeping` is installed and appear under Admin → Utilities → Housekeeping. Run them on demand with `housekeeping:run --routine=…` (add `--dry-run` or `--force` as needed). `admin:dataexport:process` is unchanged.
+Admin keeps three tables tidy using [housekeeping](../housekeeping/) routines. `nails/module-housekeeping` discovers them automatically and lists them under _Utilities → Housekeeping_. They run on their own schedules, and you can run one on demand with `housekeeping:run --routine=…` (add `--dry-run` or `--force` as needed).
+
+| Routine                                                  | Table             | Schedule          | Controlled by                    |
+| -------------------------------------------------------- | ----------------- | ----------------- | -------------------------------- |
+| [`Nails\Admin\Housekeeping\Sessions`](#sessions)      | `admin_session`   | Every 5 minutes   | `ADMIN_SESSION_RETENTION`        |
+| [`Nails\Admin\Housekeeping\DataExport`](#data-export) | `admin_export`    | Every 15 minutes  | Each export's `expires` date     |
+| [`Nails\Admin\Housekeeping\ChangeLog`](#changelog)    | `admin_changelog` | Daily             | `ADMIN_CHANGELOG_RETENTION_DAYS` |
 
 ## Sessions
 
@@ -14,7 +20,7 @@ Audit log columns: `id`, `user_id`, `heartbeat`.
 
 ## Data export
 
-`Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export`. The CDN download is removed by `Nails\Admin\Event\Listener\Export\Deleted`, which listens for `DELETED` on the export model so any `delete()` / `deleteMany()` (housekeeping included) cascades the file. The object is destroyed only when no remaining row still references that `download_id`. Identical requests share a file, so the last sibling is the one that removes it. CDN failures are logged and do not fail the delete or the routine.
+`Nails\Admin\Housekeeping\DataExport` deletes expired rows from `admin_export`. See [Data Export](data-export.md) for how long exports are kept. The CDN download is removed by `Nails\Admin\Event\Listener\Export\Deleted`, which listens for `DELETED` on the export model so any `delete()` / `deleteMany()` (housekeeping included) cascades the file. The object is destroyed only when no remaining row still references that `download_id`. Identical requests share a file, so the last sibling is the one that removes it. CDN failures are logged and do not fail the delete or the routine.
 
 Dry-run logs the rows and skips `delete()`, so the listener does not run.
 
@@ -29,5 +35,3 @@ Audit log columns: `id`, `download_id`, `expires`.
 It runs daily.
 
 Audit log columns: `id`, `user_id`, `created`.
-
-There was no cleaner for this table before.
