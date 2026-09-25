@@ -121,7 +121,7 @@ The trait supplies the migration's `execute()` method, which rewrites each user 
 
 ## Restricting admin by IP
 
-_Settings → Admin → IP Whitelist_ limits admin to a list of IP addresses. Enter one entry per line, or separate entries with commas. Each entry is either an exact address (`203.0.113.7`) or an IPv4 CIDR range (`203.0.113.0/24`). IPv6 ranges aren't supported, so list IPv6 addresses individually. The form shows your current IP address, so you can include it.
+_Settings → Admin → IP Whitelist_ limits admin to a list of IP addresses. Enter one entry per line, or separate entries with commas. Each entry is either an exact IPv4 or IPv6 address (`203.0.113.7`, `2001:db8::1`) or a CIDR range (`203.0.113.0/24`, `2001:db8::/32`). The form shows your current IP address, so you can include it.
 
 When the list isn't empty, a request from any other address:
 
