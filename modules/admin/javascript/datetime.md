@@ -27,7 +27,7 @@ echo form_field_datetime([
 * Add `data-timezone-aware`, `data-user-timezone`, and `data-app-timezone` on the input
 * Add `.timezone-aware` on the field row
 * Sit a one-line channel under the input naming the user's timezone in English (for example `Europe - London`). The name is a [confirm](confirm.md) link (`hint--top hint--medium`) to their account edit screen. Confirm copy: “Continue to edit your account and update your timezone.” / “You will lose unsaved changes.”
-* Emit the IANA → English catalogue once per page as `#js-timezone-catalogue` for the picker
+* Queue the IANA → English catalogue once per page via the Asset service as `window.NAILS.TIMEZONE_CATALOGUE` for the picker
 
 Use `tip` for field-specific guidance (when the date applies, blank means immediately, and so on). Do not repeat the timezone in `info`.
 
