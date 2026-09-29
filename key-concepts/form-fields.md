@@ -34,8 +34,9 @@ echo form_field([
 | `data`         | `data-*` attributes. `revealer` + `reveal-on` together are copied onto the field container so the whole row can show/hide. |
 | `readonly`     | Disables the control; admin shows a padlock on it. |
 | `error`        | Force the error state / message. |
-| `placeholder`  | Placeholder text. |
-| `autocomplete` | Defaults to on. |
+| `placeholder`    | Placeholder text. |
+| `autocomplete`   | Defaults to on. |
+| `timezoneAware`  | Datetime fields only. Marks the input timezone-aware for [admin DateTime](../modules/admin/javascript/datetime.md). |
 
 The second argument to `form_field($aField, $sTip)` is a deprecated alias of `$aField['tip']`.
 
@@ -48,6 +49,24 @@ Use `tip` for a short sentence the user might need while filling the field. Use 
 `Nails\Common\Helper\Form\Field::requiredMarker(true)` returns the asterisk plus a visually hidden “required”. Colour lives in admin `.field-required`. Helpers call this for you when `required` is true.
 
 Do not add HTML5 `required` on admin edit fields if the form must be savable as a draft.
+
+## Timezone-aware datetimes
+
+`form_field_datetime()` with `timezoneAware => true` tells admin the value is wall time in the current user's timezone. The control still posts a naive `Y-m-d H:i:s` string. Convert it on save (`toNailsDatetime()`) and convert stored app time back for the form (`toUserDatetime()`).
+
+```php
+echo form_field_datetime([
+    'key'           => 'date_published',
+    'label'         => 'Schedule',
+    'default'       => $oItem->date_published
+        ? toUserDatetime((string) $oItem->date_published, 'Y-m-d H:i:s')
+        : '',
+    'timezoneAware' => true,
+    'tip'           => 'Leave blank to publish immediately.',
+]);
+```
+
+Do not turn this on for every datetime. A created/modified stamp, or a value that is already in the app timezone, should stay a plain picker. See [DateTime](../modules/admin/javascript/datetime.md).
 
 ## Booleans
 
