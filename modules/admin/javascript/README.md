@@ -107,6 +107,7 @@ The following plugins are bundled with admin, and are available for you to use:
 * [Collapsible Fieldsets](collapsible-fieldsets.md) – fold opted-in fieldset cards
 * [Confirm](confirm.md) – confirm a navigation with the [Modal](modal.md) plugin
 * [Copy to Clipboard](copy-to-clipboard.md) – easily copy text to the user's clipboard
+* [DateTime](datetime.md) – date, time, and timezone-aware datetime pickers
 * [Dynamic Table](dynamic-table.md) – render dynamic tables easily
 * [Modal](modal.md) – programmatic and markup-driven dialogs
 * [Modalize](modalize.md) – edit a hidden chunk of a form in a modal

@@ -73,6 +73,7 @@
     * [Collapsible Fieldsets](modules/admin/javascript/collapsible-fieldsets.md)
     * [Confirm](modules/admin/javascript/confirm.md)
     * [Copy to Clipboard](modules/admin/javascript/copy-to-clipboard.md)
+    * [DateTime](modules/admin/javascript/datetime.md)
     * [Dynamic Table](modules/admin/javascript/dynamic-table.md)
     * [Modal](modules/admin/javascript/modal.md)
     * [Modalize](modules/admin/javascript/modalize.md)
