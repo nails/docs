@@ -1,184 +1,81 @@
 ---
-description: Keep tabs on where CMS widgets and templates are being used.
+description: Report where CMS widgets and templates are used.
 ---
 
 # Monitor
 
-As sites develop, iterate, and age, it's likely that certain widgets will become obsolete. In a big project it can be difficult to know what widget is being used where. To solve this the CMS module provides a utility tool for monitoring where widgets and templates are used throughout the project.
+Widgets and templates end up as JSON (or a slug column) on other tables, so usage is not a foreign key. The monitor asks each mapper where to look, then counts and lists the rows.
 
-As widget data is simply serialised into a JSON object, we cannot leverage thigns like foreign keys to let us know _where_ widgets are being used, instead we need to declare in which columns they _can_ be used and then look in those columns for instances of the widget's slug.
+Admin shows two screens under Utilities, for users with the matching permission:
 
-We do this by providing mappers. Mappers are classes in the `App\Cms\Monitor` namespace which implement one of the following interfaces:
+* CMS Monitor: Widgets
+* CMS Monitor: Templates
+
+The widget screen includes hidden widgets and excludes disabled ones. A deprecated widget or template is flagged on its detail screen, including the `ALTERNATIVE` text when one is set.
+
+## Mappers
+
+A mapper is any class under a component's `Cms\Monitor` namespace that implements one of:
 
 * `Nails\Cms\Interfaces\Monitor\Widget`
 * `Nails\Cms\Interfaces\Monitor\Template`
 
-A monitor's responsibility is to report its label (used when viewing details about a widget or template's usage) as well as a count of how many times the widget is used in that particular context, as well as return an array of usages (also used when viewing details about a widget or template).
+The app namespace is `App\Cms\Monitor`. The CMS module ships mappers for areas (`Nails\Cms\Cms\Monitor\Widget\Area`) and for pages (widget data and template slugs).
 
-For example, if a `Book` model has column `body` which contains widget data; a widget monitor might look like this:
+Each mapper returns a label, a usage count, and a list of `Nails\Cms\Factory\Monitor\Detail\Usage` objects (label, optional view URL, optional edit URL).
 
-```php
-namespace App\Cms\Monitor\Widget
+### Widget trait
 
-use Nails\Common\Service\Database;
-use Nails\Cms\Interfaces;
-use Nails\Cms\Factory\Monitor\Detail;
-
-class Book implements Interfaces\Widget
-{
-    /**
-     * Returns the mapper's label, used on the details page
-     */
-    public function getLabel(): string
-    {
-        return 'Books';
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Counts the number of instances a given widget is used
-     */
-    public function countUsages(Interfaces\Widget $oWidget): int
-    {
-        /** @var Database $oDb */
-        $oDb    = Factory::service('Database');
-        $oModel = Factory::model('Book', 'app');
-        
-        $oDb->from($oModel->getTableName());
-        
-        $oDb->where(
-            'JSON_CONTAINS(JSON_EXTRACT(`body`, "$[*].slug"), \'"%s"\', "$")'
-        );
-        
-        return $oDb->count_all_results();
-    }
-
-    // --------------------------------------------------------------------------
-
-    /**
-     * Locates instances where a given widget is used
-     */
-    public function getUsages(Interfaces\Widget $oWidget): array
-    {
-        /** @var Database $oDb */
-        $oDb    = Factory::service('Database');
-        $oModel = Factory::model('Book', 'app');
-        
-        $oDb->from($oModel->getTableName());
-        
-        $oDb->where(
-            'JSON_CONTAINS(JSON_EXTRACT(`body`, "$[*].slug"), \'"%s"\', "$")'
-        );
-        
-        return array_map(function (\stdClass $oRow) {
-
-            /** @var Detail\Usage $oUsage */
-            $oUsage = Factory::factory(
-                'MonitorDetailUsage',
-                Constants::MODULE_SLUG,
-                
-                // The item's label
-                $oRow->label,
-                
-                // The item's "view" URL
-                siteUrl('books/' . $oRow->slug),
-                
-                // The item's "edit" url
-                siteUrl('admin/app/book/edit/' . $oRow->id)
-            );
-
-        }, $oDb->get()->result());
-    }
-}
-```
-
-## Monitor Trait
-
-To make things a little easier, and to reduce duplication in logic, a trait is provided for both widget and template monitors. These traits both behave in the same way: they provide a structure for defining a table to inspect and specifically which columns to look in for the widget or template's slug.
-
-* `Nails\Cms\Traits\Monitor\Widget`
-* `Nails\Cms\Traits\Monitor\Template`
-
-Using the same `Book` example above, the same mapper might be re-written like so:
+`Nails\Cms\Traits\Monitor\Widget` runs a `JSON_CONTAINS` query. By default it looks for the widget slug at `$[*].slug`. Override `getJsonPath()` when the JSON is shaped differently.
 
 ```php
 namespace App\Cms\Monitor\Widget;
 
 use Nails\Cms\Constants;
+use Nails\Cms\Factory\Monitor\Detail;
 use Nails\Cms\Interfaces;
 use Nails\Cms\Traits;
-use Nails\Cms\Factory\Monitor\Detail;
 use Nails\Factory;
 
 class Book implements Interfaces\Monitor\Widget
 {
     use Traits\Monitor\Widget;
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the mapper's label, used on the details page
-     */
     public function getLabel(): string
     {
         return 'Books';
     }
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the table to inspect
-     */
     protected function getTableName(): string
     {
         return Factory::model('Book', 'app')->getTableName();
     }
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the columns which contain widget data
-     */
-    private function getDataColumns(): array
+    protected function getDataColumns(): array
     {
         return ['body'];
     }
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns the columsn to use in the detail query, passed as $oRow
-     * to compileUsage()
-     */
-    private function getQueryColumns(): array
+    protected function getQueryColumns(): array
     {
         return ['id', 'label', 'slug'];
     }
 
-    // --------------------------------------------------------------------------
-
-    /**
-     * Returns a usage object detailing the item which uses the widget
-     */
     protected function compileUsage(\stdClass $oRow): Detail\Usage
     {
-        /** @var Detail\Usage $oUsage */
-        $oUsage = Factory::factory(
+        return Factory::factory(
             'MonitorDetailUsage',
             Constants::MODULE_SLUG,
-            
-            // The item's label
             $oRow->label,
-            
-            // The item's "view" URL
             siteUrl('books/' . $oRow->slug),
-            
-            // The item's "edit" url
             siteUrl('admin/app/book/edit/' . $oRow->id)
         );
-
-        return $oUsage;
     }
 }
 ```
+
+### Template trait
+
+`Nails\Cms\Traits\Monitor\Template` has the same methods. It matches the template slug with a plain column comparison, which fits columns such as `published_template` and `draft_template`.
+
+Implement the interface directly when the lookup is not a JSON slug list or a single column.

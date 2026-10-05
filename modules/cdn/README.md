@@ -66,3 +66,34 @@ The CDN module provides some utility console commands for managing objects from 
 ## Housekeeping
 
 CDN ships routines that expire tokens and empty old trash. See [Housekeeping](housekeeping.md).
+
+## CMS widget
+
+The CDN module supplies a CMS widget with the slug `image` (class `Nails\Cdn\Cms\Widget\Image`). It appears in the widget editor alongside the widgets shipped by the CMS module. How widgets are discovered and how `DISABLED`, `HIDDEN`, and `DEPRECATED` behave is covered in [CMS widgets](../cms/widgets/).
+
+The editor asks for a CDN object (`iImageId`) and then:
+
+| Field | Values |
+| --- | --- |
+| `sScaling` | `NONE` (native size), `CROP`, or `SCALE` |
+| `sSize` | A `widthxheight` pair drawn from the app's permitted image dimensions. The widget renders only when this is set. `NONE` still serves the original; crop and scale use the pair. |
+| `sLinking` | `NONE`, `FULLSIZE` (the original object), or `CUSTOM` |
+| `sUrl` | Used when linking is `CUSTOM` |
+| `sTarget` | Empty, `_blank`, or `_parent` |
+| `sImgAlt`, `sImgTitle` | `alt` and `title` on the `<img>` |
+| `sImgAttr`, `sLinkAttr` | Extra attributes on the image and the link |
+
+Crop and scale call `cdnCrop()` and `cdnScale()`. `NONE` calls `cdnServe()`. The markup is wrapped in `.cms-widget-image`. A missing object, or a size the driver rejects, renders nothing.
+
+Older saves used different keys. The widget still reads `image_id`, `scaling`, `size`, `url`, `target`, `img_attr`, and `link_attr`, and it maps a legacy `width` and `height` onto `sSize` when that pair is one of the permitted dimensions.
+
+The widget implements `Nails\Cms\Interfaces\Monitor\Cdn\Widget` and reports `iImageId`, so CDN usage monitoring can find the object inside widget data.
+
+```php
+<?=cmsWidget('image', [
+    'iImageId' => 42,
+    'sScaling' => 'CROP',
+    'sSize'    => '1200x630',
+    'sImgAlt'  => 'Harbour at dusk',
+])?>
+```

@@ -59,17 +59,15 @@ See [Assets](../intro/assets.md) for more detailed information and examples.
 The easiest way to build a CMS template is to use the `nails make:cms:template` command; this will create placeholder
 template files in the `application/modules/cms/templates` directory.
 
-See [nailsapp/module-cms docs](https://github.com/nailsapp/module-cms/blob/develop/docs/pages/templates.md) for more
-information.
+See [CMS templates](../modules/cms/pages/templates.md) for the class, widget areas, and options.
 
 
 ## How do I build CMS widgets
 
-The easiest way to build a CMS widet is to use the `nails make:cms:widget` command; this will create placeholder
+The easiest way to build a CMS widget is to use the `nails make:cms:widget` command; this will create placeholder
 widget files in the `application/modules/cms/widgets` directory.
 
-See [nailsapp/module-cms docs](https://github.com/nailsapp/module-cms/blob/develop/docs/widgets/) for more
-information.
+See [CMS widgets](../modules/cms/widgets/) for the class, views, and the `DISABLED`, `HIDDEN`, and `DEPRECATED` constants.
 
 ## How do I build admin sections
 

@@ -1,19 +1,24 @@
+---
+description: Front-end helpers for blocks, menus, pages, areas, and widgets.
+---
+
 # Helpers
 
-
-
-The following helpers are made available by the CMS module.
-
-### Loading the helper
+The CMS module autoloads two helpers: `cms` and `form`. Call them directly. To load them yourself:
 
 ```php
+use Nails\Cms\Constants;
 use Nails\Factory;
-Factory::helper('cms', 'nails/module-cms');
+
+Factory::helper('cms', Constants::MODULE_SLUG);
+Factory::helper('form', Constants::MODULE_SLUG);
 ```
 
-### Admin: widget editor field
+## Admin
 
-`form_field_cms_widgets()` (and model type `Nails\Cms\Helper\Form::FIELD_WIDGETS`) renders a button that opens the widget editor. It is a [form field](../../../key-concepts/form-fields.md), so `tip`, `required`, and `info` work the same as other helpers.
+### form_field_cms_widgets()
+
+Renders the button that opens the widget editor. The model field type is `Nails\Cms\Helper\Form::FIELD_WIDGETS` (`cms_widgets`). It is a [form field](../../key-concepts/form-fields.md), so `tip`, `required`, and `info` work the same as other helpers.
 
 ```php
 echo form_field_cms_widgets([
@@ -23,36 +28,32 @@ echo form_field_cms_widgets([
 ]);
 ```
 
-### Front end
+The posted value is a JSON list of `{slug, data}` objects. See [Widgets](widgets/).
 
-#### cmsBlock($sSlug)
+## Front end
 
-> @todo - write up this helper
+### cmsBlock($mIdSlug)
 
-#### cmsSlider($sIdSlug)
+Returns the block's stored value for an id or slug, or an empty string when the block is missing.
 
-> @todo - write up this helper
+Image and file blocks store a CDN object id. `cmsBlock()` returns that id. Call `render()` on the block resource when you want the served URL, or use a short tag inside a template. See [Blocks](blocks.md#on-the-front-end).
 
-#### cmsMenu($mIdSlug)
+### cmsMenu($mIdSlug, $aData = [])
 
-> @todo - write up this helper
+Returns a `Nails\Cms\Resource\Menu`, or `null`. `$aData` is passed through to the menu model. See [Menus](menus.md).
 
-#### cmsMenuNested($mIdSlug)
+### cmsPage($mIdSlug)
 
-> @todo - write up this helper
+Returns a `Nails\Cms\Resource\Page`, or `null`. The resource has `published` and `draft` data. See [Pages](pages/).
 
-#### cmsPage($mIdSlug)
+### cmsArea($mIdSlug)
 
-> @todo - write up this helper
+Returns the rendered HTML for an area id or slug. An unknown area returns an empty string. See [Areas](areas.md).
 
-#### cmsArea($mIdSlug)
+### cmsAreaWithData($mWidgetData)
 
-> @todo - write up this helper
+Renders a widget list you already hold (array or JSON) and returns HTML.
 
-#### cmsAreaWithData($aData)
+### cmsWidget($sSlug, $aData = [])
 
-> @todo - write up this helper
-
-#### cmsWidget($sSlug, $aData = array())
-
-> @todo - write up this helper
+Renders one widget by slug. Hidden widgets resolve. A disabled or unknown slug returns an empty string. See [Widgets](widgets/#rendering-one-widget).
