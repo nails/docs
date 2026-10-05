@@ -1,14 +1,38 @@
+---
+description: Nestable pages built from a template and widget areas.
+---
+
 # Pages
 
-CMS Pages allow admin users to generate complete, nestable pages of content on the site via a friendly, drag and drop GUI.
+CMS pages are nestable pages edited in admin and rendered by a [template](templates.md). Editors work under CMS → Pages. A page keeps a draft and a published copy of its title, slug, parent, template, widget data, template options, and SEO fields (title, description, keywords, image).
 
-Pages are essentially normal views, but which are passed some additional data in the form of rendered CMS Areas and, optionally, custom options made available by the template.
+Publishing copies the draft onto the published columns and registers the published slug as a route:
 
-### Templates
+```php
+$route['about/team'] = 'cms/render/page/42';
+```
 
-Every page must make use of a template in order to render. CMS Templates are pwoerful and can make use of any function, class or constant which is available in Nails. Templates can be provided by the application, or any module which is installed, in addition all module-supplied templates can be overridden by the app allowing for a very high level of customisation if needed.
+A previous slug redirects to the current one with a 301, via `cms/render/legacy_slug/{id}`. Unpublished and deleted pages are not routed. Delete is soft.
 
-{% content-ref url="templates.md" %}
-[templates.md](templates.md)
-{% endcontent-ref %}
+The render controller sets:
 
+| Variable | Contents |
+| --- | --- |
+| `$oCmsPage` | The page resource |
+| `$oCmsPageData` | The published data, or the draft when previewing |
+| `$page_data` | The same data object, kept for older templates |
+
+Preview (`cms/render/preview/{id}`) is limited to users who can edit pages and renders the draft. A published page with unpublished edits shows a warning to those users.
+
+`cmsPage()` returns the page resource, by id or slug, without rendering it.
+
+```php
+$oPage = cmsPage('about/team');
+echo $oPage->published->title;
+```
+
+`$oPage->render()` returns the template HTML. Pass `false` to render the draft.
+
+Publishing and unpublishing fire `PAGE:PUBLISHED` and `PAGE:UNPUBLISHED` (`Nails\Cms\Events`), with the page id.
+
+To serve a page at `/`, see [Homepage](homepage.md).

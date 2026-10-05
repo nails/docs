@@ -1,54 +1,47 @@
+---
+description: Build, place, and retire CMS widgets, including those supplied by other modules.
+---
+
 # Widgets
 
-Widgets are the underlying work horse of the CMS and range from being incredibly simple to extremely complex. There is no real limit to what widgets can and cannot do.
+Widgets are the blocks of content an editor drops into a [widget area](../areas.md), a [page template](../pages/templates.md), or any admin field that uses the widget editor. A widget is a class plus two views: one for admin, one for the front end.
 
-## Anatomy of a Widget
+## Anatomy
 
-Widgets are essentially a single class with two companion views: one for the front end and one for the back end. Users can place widgets into widget areas and define properties based on the `<form>` contents of `views/editor.php`.
-
-In addition, widgets can supply some custom JS to enhance the admin experience (e.g. dynamic fields). A basic widget directory tree looks like this:
+App widgets live under `application/modules/cms/widgets/{slug}/`. Installed modules use the same layout under `{module}/cms/widgets/{slug}/`.
 
 ```
-application/
-    cms/
-        widgets/
-            MyWidget/
-                widget.php
-                screenshot.png
-                views/
-                    editor.php
-                    render.php
-                js/
-                    dropped.js
-
+application/modules/cms/widgets/MyWidget/
+    widget.php
+    screenshot.png
+    views/
+        editor.php
+        render.php
+    js/
+        dropped.js
+        removed.js
 ```
 
-`widget.php` is the [Widget Definition](./#widget-definition).
+`widget.php` is the definition. The directory name is the slug (`MyWidget`). The class name is that slug with the first letter uppercased (`MyWidget`), in the `App\Cms\Widget` namespace. A module widget uses the module namespace plus `Cms\Widget`, so the CMS module's accordion widget is `Nails\Cms\Cms\Widget\Accordion` in `cms/widgets/accordion/`.
 
-`screenshot.php` is an optional screenshot to display along side the widget in the editor sidebar; this should be around 500px wide and show the widget with as little surrounding content as possible.
+`screenshot.png` (also `.jpg` or `.gif`) is optional. The editor shows it when the pointer is over the widget in the sidebar. Aim for about 500px wide, with as little surrounding page as possible.
 
-`views/editor.php` is the[ Editor View](./#editor-view).
+`views/editor.php` is the admin form. `views/render.php` is the front-end markup. Either file can be omitted; a missing view renders as an empty string.
 
-`views/render.php` is the [Render View](./#render-view).
+`js/dropped.js` runs when an instance is added to the editor. `js/removed.js` runs after the editor confirms removal. A `.min.js` file is preferred when both are present. Both are optional. Each file is turned into a function that receives the instance's DOM element as `domElement`. `this` is the editor.
 
-`js/dropped.js` is the editor's [javascript](./#javascript).
-
-## Creating Widgets
-
-The easiest way to create a widget is to use the Command Line Tool:
+## Creating a widget
 
 ```bash
 nails make:cms:widget MyWidget
 ```
 
-This will create a widget called `MyWidget` for you, with stubs for you to alter as necessary.
+The command writes the directory, `widget.php`, both views, and `js/dropped.js` under `application/modules/cms/widgets/`.
 
-### Widget Definition
-
-This is a class which matches the widget's name and is in the App\Cms\Widget namespace. It declares your widget's details.
+### Definition
 
 ```php
-// application/modules/cms/widgets/MyWidget.php
+// application/modules/cms/widgets/MyWidget/widget.php
 
 namespace App\Cms\Widget;
 
@@ -61,10 +54,11 @@ class MyWidget extends WidgetBase
         parent::__construct();
 
         $this->label       = 'My Widget';
+        $this->icon        = 'fa-cube';
         $this->grouping    = 'Generic';
         $this->description = 'A short description about the widget';
         $this->keywords    = 'some,searchable,keywords';
-        
+
         // Keys defined here are available as variables in both views
         $this->data = [
             'sBody' => '<p>Default body text</p>',
@@ -73,12 +67,27 @@ class MyWidget extends WidgetBase
 }
 ```
 
-### Editor View
+| Property | Role |
+| --- | --- |
+| `$label` | Name in the sidebar and on each placed instance |
+| `$icon` | Font Awesome class. Empty falls back to `DEFAULT_ICON` (`fa-cube`) |
+| `$grouping` | Sidebar group. An empty value, or the label `Generic`, joins the Generic group |
+| `$description` | Shown on the placed instance |
+| `$keywords` | Extra search terms for the sidebar filter |
+| `$data` | Default values. Missing keys are filled before either view loads |
+| `$assets_editor` | Styles and scripts for the editor |
+| `$assets_render` | Styles and scripts for the front end |
 
-The editor view is optional, but if provided is a means for you to offer the user some configurable options (e.g. text input or select  option). The structure of this file is up to you - the wiget editor view will automatically parse out form input elements and save them as variables. Once saved they are made available to the view, so they can be repopulated.
+Asset entries are a URL or path string, or a `[path, location]` pair passed to the asset service.
+
+The editor lists groups with a numeric order first, then unordered groups. Ties sort by label. To give a group an order, overload the widget service with `App\Cms\Service\Widget` (see [Overloading](../../../key-concepts/factory/overloading.md)) and override `getWidgetGroupOrder()` so it returns an integer for that label.
+
+### Editor view
+
+The editor reads every named field in `views/editor.php` and stores it under that name. Checkboxes are booleans, `name[]` fields are arrays, and the payload is JSON so types survive the round trip. Prefer the [form field helpers](../../../key-concepts/form-fields.md) so the widget picks up the same [admin chrome](../../admin/forms.md) as the rest of admin.
 
 ```php
-// application/modules/cms/widgets/views/editor.php
+// application/modules/cms/widgets/MyWidget/views/editor.php
 
 echo form_field_textarea([
     'key'     => 'sBody',
@@ -88,64 +97,71 @@ echo form_field_textarea([
 ]);
 ```
 
-`form_field*()` helpers pick up the usual [admin chrome](../../admin/forms.md) (tips, required markers, [toggles](../../admin/javascript/toggles.md), [Select](../../admin/javascript/select.md)). Prefer them over raw `<input>` so the widget editor matches the rest of admin.
+### Render view
 
-### Render View
-
-This view is what is rendered in the front end when a widget area is rendered. It is a basic PHP view which is passed the form input elements from the editor as variables which match the input names.
+`views/render.php` receives the saved fields as variables. Rendering fires `WIDGET:RENDER:PRE` and `WIDGET:RENDER:POST` (`Nails\Cms\Events`). Listeners receive the widget, its data, and the output so far; the output argument is a reference.
 
 ```php
-// application/modules/cms/widgets/views/render.php
+// application/modules/cms/widgets/MyWidget/views/render.php
 
 if (!empty($sBody)) {
     ?>
     <div class="cms-widget">
         <?=$sBody?>
     </div>
-    <?
+    <?php
 }
+```
+
+A saved area is a list of instances:
+
+```json
+[
+    {"slug": "MyWidget", "data": {"sBody": "<p>Hello</p>"}}
+]
 ```
 
 ### Javascript
 
-Additional Javascript is optional, but if available will be called each time a new instance of the widget is added to the widget editor interface. It will be called within a closure which makes the DOM element available via a variable called `domElement`; use this to bind custom actions to items within the editor interface.
-
 ```javascript
-// application/modules/cms/widgets/js/dropped.js
+// application/modules/cms/widgets/MyWidget/js/dropped.js
 
 domElement
     .querySelector('.some-class')
-    .addEventListener(...);javascript
+    .addEventListener('click', function () {
+        // ...
+    });
 ```
 
-## Default Widgets
+## Constants
 
-There are a number of commonly used widgets which are bundled with the module. If you're stuck, this can be a good place to look.
+Declare these on the widget class. Each one changes whether the widget can be chosen, edited, or rendered.
 
-```
-vendor/nails/module-cms/cms/widgets/*
-```
+| Constant | Default | Effect |
+| --- | --- | --- |
+| `DISABLED` | `false` | The widget is never instantiated |
+| `HIDDEN` | `false` | Kept out of the editor sidebar; existing placements still render |
+| `DEPRECATED` | `false` | Kept out of the sidebar; existing placements stay editable and show a warning |
+| `ALTERNATIVE` | `''` | Replacement named in that warning |
+| `DEFAULT_ICON` | `'fa-cube'` | Icon used when `$this->icon` is empty |
 
-## Widget Helpers
+### Disabled
 
-The helper `cmsWidget(string $sSlug, array $aData = [])` is available for rendering widgets on their own; the first parameter is the widget's slug/classname and the second is any key:value data you wish to pass to the render view.
+`DISABLED = true` drops the widget during discovery. The sidebar, `getBySlug()`, and `cmsWidget()` all miss it. An area that still references the slug skips it in production. Outside production, rendering that area throws `Nails\Cms\Exception\Widget\NotFoundException`.
+
+Use this when a module ships a widget the app should not offer at all. The usual way is an app widget with the same slug that extends the module class and sets the constant.
+
+### Hidden
+
+`HIDDEN = true` leaves the widget out of the editor sidebar (`Widget::getAvailable()`). `getBySlug()` loads hidden widgets, so a placement that is already saved still renders, and `cmsWidget()` can still target the slug.
+
+The editor's catalogue is that same sidebar list. Opening an area which already contains a hidden widget shows the instance as missing, because the editor cannot look the slug up. Choose `DEPRECATED` when editors still need to open and adjust existing placements.
+
+### Deprecated
+
+`DEPRECATED = true` retires a widget without removing it. The sidebar skips it, so it cannot be added again. A placement that is already saved still opens, and the editor shows "This widget is deprecated." Set `ALTERNATIVE` to the replacement's name or slug and the warning adds "Consider using {alternative} instead." The [monitor](../monitor.md) flags the same state on the widget's detail screen.
 
 ```php
-<h1>An Example</h1>
-<?=cmsWidget('MyWidget', ['body' => '<p>This is some body text.</p>'])?>
-```
-
-## Overriding Module Widgets
-
-Widgets provided by the app are loaded last; if the slug matches exactly then will override any module-provided widgets. This gives you an opportunity to alter the behaviour of the widget, or it's views. A common scenario is to set the `DISABLED` constant to `true` so that the widget is not offered to the end user.
-
-## Deprecating Widgets
-
-Over time widgets designs evolve and widgets may become outdated and shouldn't be used. Highlight that a widget is deprecated by setting its `DEPRECATED` constant to `true`. Additionally, if another widget should be used instead you can specify alternative(s) by setting the `ALTERNATIVE` constant. The widget editor will highlight that the widget is deprecated and inform the user which alternative to use instead.
-
-```php
-// application/modules/cms/widgets/MyWidget.php
-
 namespace App\Cms\Widget;
 
 use Nails\Cms\Widget\WidgetBase;
@@ -153,22 +169,59 @@ use Nails\Cms\Widget\WidgetBase;
 class MyWidget extends WidgetBase
 {
     const DEPRECATED  = true;
-    const ALTERNATIVE = 'MyOtherWidget or SomeOtherWidget';
+    const ALTERNATIVE = 'MyOtherWidget';
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->label       = 'My Widget';
-        $this->grouping    = 'Generic';
-        $this->description = 'A short description about the widget';
-        $this->keywords    = 'some,searchable,keywords';
-        
-        // Keys defined here are available as variables in both views
-        $this->data = [
-            'sBody' => '<p>Default body text</p>',
-        ];
+        $this->label = 'My Widget';
     }
 }
 ```
 
+## Supplied widgets
+
+The CMS module ships these widgets. Slugs match the directory names.
+
+| Slug | Label | |
+| --- | --- | --- |
+| `richtext` | Rich Text | CKEditor field `body`, wrapped in `.cms-widget-richtext`. See [Rich Text](rich-text.md). |
+| `html` | Plain Text | Unfiltered HTML in `body`, wrapped in `.cms-widget-html`. |
+| `blockquote` | Blockquote | `quote`, `cite_text`, and `cite_url`. |
+| `table` | Table | Handsontable editor. `tblData` is the cell JSON; `tblAttr` is extra markup on the `<table>`. |
+| `tabs` | Tabs | Repeatable `title` and `body` fields, rendered as Bootstrap tabs. `cmsWidget()` can pass a `tabs` list of `title` / `body` pairs instead. |
+| `accordion` | Accordion | Repeatable `title` and `body` fields, rendered as a Bootstrap collapse group. `cmsWidget()` can pass a `panels` list of `title`, `body`, and `collapsed`. |
+| `Area` | CMS Area | Renders another [area](../areas.md) chosen by `iAreaId`. |
+
+Other modules add widgets of their own. Those widgets are documented with the module:
+
+* [CDN](../../cdn/README.md#cms-widget) supplies `image`
+* [Custom Forms](../../other/custom-forms.md#cms-widget) supplies `customform`
+
+## Rendering one widget
+
+`cmsWidget()` renders a single widget by slug. The helper is autoloaded with the rest of the CMS helpers. Hidden widgets resolve; disabled widgets return an empty string.
+
+```php
+<?=cmsWidget('MyWidget', ['sBody' => '<p>This is some body text.</p>'])?>
+```
+
+## Overriding a module widget
+
+Discovery walks installed modules, then the app. An app directory with the same slug replaces the module widget. Extend the module class when the views and behaviour should stay, and only the constants or copy need to change. `getFilePath()` walks the parent classes, so an override can keep the parent's `views/` and `js/` files.
+
+```php
+// application/modules/cms/widgets/accordion/widget.php
+
+namespace App\Cms\Widget;
+
+class Accordion extends \Nails\Cms\Cms\Widget\Accordion
+{
+    const DISABLED = true;
+}
+```
+
+The directory name has to match the module widget's slug exactly (`accordion`, including case). The class is `Accordion` because the loader uppercases the first letter.
+
+The same pattern with `HIDDEN` or `DEPRECATED` applies when the widget should remain in existing content.

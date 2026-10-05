@@ -39,11 +39,11 @@ page a custom route is written which maps it to its ID, for example: a page with
 `123` would have the following route written:
 
 ```php
-$route['my-cms-page'] = 'cms/render/123';
+$route['my-cms-page'] = 'cms/render/page/123';
 ```
 
-This will cause Nails to load the CMS module's `render` controller and pass in the distinct Page ID which it can then
-use to render the page.
+This will cause Nails to load the CMS module's `render` controller, call `page`, and pass in the page id. See
+[CMS pages](../modules/cms/pages/).
 
 ## Automatic Routes
 If no matching explicit or generated route is found then the router switches into automatic mode and attempts to infer

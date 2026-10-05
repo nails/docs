@@ -10,7 +10,7 @@ This module brings a full featured BYOFE (Bring Your Own Front End) Content Mana
 
 The CMS is broken down into the following five concepts:
 
-* [Widgets](widgets/) - Small blocks of code which can render user input
+* [Widgets](widgets/) - Small blocks of code which can render user input. Other modules can supply widgets; those are documented with the module and listed from the widgets page.
 * [Areas](areas.md) - Complex areas which contain multiple configurable widgets
 * [Blocks](blocks.md) - Single, small blocks of content
 * [Menus](menus.md) - Fully configurable, nestable menus

@@ -1,163 +1,123 @@
+---
+description: Layouts that define widget areas and options for CMS pages.
+---
+
 # Templates
 
-Templates are what CMS Pages use to lay the page out; they define "widget areas" which can be populated by the user with [widgets](../widgets/), as well as offering a variety of additional configuration options which can be used by the page to alter the layout, or indeed any aspect of the rendered page.
+A template lays a [page](./) out. It declares widget areas, which editors fill with [widgets](../widgets/), and optional fields that change the layout.
 
-### Anatomy of a template
+## Anatomy
 
-Templates are simply a single class which extends the base template and provides a view file. You can optionally include a screenshot too, for extra bells and whistles. CMS Templates must exist at `application/modules/cms/templates`, and the typical template layout looks like this:
+App templates live at `application/modules/cms/templates/{slug}/`. Modules use `{module}/cms/templates/{slug}/`.
 
 ```
-/application/
-|- cms/
-|--- templates/
-|------ MyTemplate/
-|--------- template.php
-|--------- view.php
-|--------- icon.png
-|--------- icon@2x.png             
+application/modules/cms/templates/MyTemplate/
+    template.php
+    view.php
+    icon.png
 ```
 
-`template.php` is your template definition, and `view.php` is the HTML which will be rendered. Optionally you can include `icon.png` and `icon@2x.png` which will be rendered in admin and can be a nice UI touch.
+`template.php` is the definition. The directory name is the slug. The class name is that slug with the first letter uppercased, in `App\Cms\Template`. `view.php` is the full HTML for the page, including any header and footer the layout needs. `icon.png` (also `.jpg`, `.jpeg`, or `.gif`) is shown in the page editor.
 
-### Default templates
+Generate a stub with:
 
-There are a number of commonly used templates which are [bundled with the module](https://github.com/nails/site-main/blob/develop/cms/templates). If you're stuck, this can be a good place to look.
-
-### Creating your own templates
-
-{% hint style="info" %}
-Easily generate CMS Templates using the [Console Command](../../../command-line-tool.md)
-{% endhint %}
-
-In order for a template to be recognised it must be defined in `template.php`. A basic set up will look like this, notice that the class name matches the directory name:
+```bash
+nails make:cms:template MyTemplate
+```
 
 ```php
-<?php
-
 namespace App\Cms\Template;
 
-use Nails\Factory;
+use Nails\Cms\Constants;
 use Nails\Cms\Template\TemplateBase;
+use Nails\Factory;
 
-class Fullwidth extends TemplateBase
+class MyTemplate extends TemplateBase
 {
     public function __construct()
     {
         parent::__construct();
-        
+
         $this->label       = 'My Template';
         $this->description = 'A short description about the template';
-    }
-}
-```
 
-The contents of `view.php` is entirely up to you, but bare in mind that no additional views will be loaded (e.g. header and footers) - it is up to you to include anything you might need using the `View` service.
-
-#### Widget areas
-
-Templates can define "widget areas"; this should be self-explanatory, but these are areas which in which the user can place widgets. CMS Pages admin will detect these areas an offer the user an interface for doing this.
-
-**Defining the widget area**
-
-Every template has a protected property called `widget_areas`. This is an array of `TemplateArea` instances. The key given to each element in `widget_areas` becomes the variable where the rendered widgets will be available to the view.
-
-Widget areas should be defined in the constructor, like so:
-
-```php
-<?php
-
-namespace App\Cms\Template;
-
-use Nails\Factory;
-use Nails\Cms\Template\TemplateBase;
-
-class Fullwidth extends TemplateBase
-{
-    public function __construct()
-    {
-        parent::__construct();
-        
-        $this->label       = 'My Template';
-        $this->description = 'A short description about the template';
-        
         $this->widget_areas = [
-
-            //  The main body of the page
-            'mainbody' => Factory::factory('TemplateArea', 'nails/module-cms')
-                ->setTitle('Main Body'),
-
-            //  The page's sidebar
-            'sidebar' => Factory::factory('TemplateArea', 'nails/module-cms')
+            'mainbody' => Factory::factory('TemplateArea', Constants::MODULE_SLUG)
+                ->setTitle('Main Body')
+                ->setDescription('Primary page content'),
+            'sidebar' => Factory::factory('TemplateArea', Constants::MODULE_SLUG)
                 ->setTitle('Sidebar'),
         ];
     }
 }
 ```
 
-**Rendering the widget area**
+The widget area's array key is the variable in `view.php`. The example above exposes `$mainbody` and `$sidebar`, each a string of rendered widget HTML.
 
-Rendered widget areas (i.e translated into a string of HTML) will be available to the view via the widget area's key, in the above example the two areas would be available at `$mainbody` and `$sidebar` respectively.
-
-### Template Options
-
-Aside from widget areas it's also possible to define some global template options. These can be used to configure the template on the fly, e.g. show or hide sidebars, define the number of columns, etc.
-
-Options are easily added via adding items to the `additional_fields` property of the template class. this is an array of `TemplateOption` instances. The value of each field is made available to the view by a variable with the same name as the item's key in the array.
-
+```php
+<?=$mainbody?>
+<aside><?=$sidebar?></aside>
 ```
-<?php
 
+Templates can also set `$assets_editor` and `$assets_render`, the same shape as [widget assets](../widgets/#definition).
+
+Set `protected static $isDefault = true` to sort the template first within its group. The bundled full-width template does this.
+
+## Template options
+
+`$additional_fields` is a list of `TemplateOption` objects. Each option is a [form field](../../../key-concepts/form-fields.md). The view variable is the option's key (`setKey()`), and the value is whatever the editor saved.
+
+```php
+$this->additional_fields = [
+    Factory::factory('TemplateOption', Constants::MODULE_SLUG)
+        ->setType('dropdown')
+        ->setKey('number_of_columns')
+        ->setLabel('No. of columns')
+        ->setDefault(2)
+        ->setOptions([
+            '2' => '2 Columns',
+            '3' => '3 Columns',
+            '4' => '4 Columns',
+        ]),
+];
+```
+
+`view.php` then reads `$number_of_columns`.
+
+After the view renders, block short tags in the HTML are replaced. See [Blocks](../blocks.md#on-the-front-end).
+
+## Constants
+
+| Constant | Default | Effect |
+| --- | --- | --- |
+| `DISABLED` | `false` | The template is left out of discovery |
+| `DEPRECATED` | `false` | Flagged in the [monitor](../monitor.md) and on the template payload (`is_deprecated`) |
+| `ALTERNATIVE` | `''` | Replacement named beside that flag |
+
+## Bundled templates
+
+| Slug | Label | |
+| --- | --- | --- |
+| `fullwidth` | Full Width | One `mainbody` area. Marked as the default template. |
+| `sidebar` | Sidebar | `mainbody` and `sidebar`. Options `sidebarWidth` (1–6 columns) and `sidebarSide` (`LEFT` or `RIGHT`). |
+| `columns` | Columns | `col1`–`col4`. Options `numColumns` (2–4) and `breakpoint` (`xs`, `sm`, `md`, `lg`). |
+| `redirect` | Redirect | Sends the request to another page (`redirect_page_id`) or URL (`redirect_url`). `redirect_code` is `302` or `301`. A URL wins over a page. An empty target is a 404. |
+
+## Overriding a module template
+
+The app is scanned last. A template directory with the same slug replaces the module template. Extend the module class to keep its areas and view; `getFilePath()` walks parent classes, so the parent's `view.php` is used when the app template does not include one.
+
+The bundled full-width class is `Nails\Cms\Cms\Template\Fullwidth`. The app directory must be `fullwidth` so the slug matches.
+
+```php
 namespace App\Cms\Template;
 
-use Nails\Factory;
-use Nails\Cms\Template\TemplateBase;
-
-class Fullwidth extends TemplateBase
+class Fullwidth extends \Nails\Cms\Cms\Template\Fullwidth
 {
     public function __construct()
     {
         parent::__construct();
-        
-        $this->label       = 'My Template';
-        $this->description = 'A short description about the template';
-        
-        $this->additional_fields = [
 
-            //  The main body of the page
-            'mainbody' => Factory::factory('TemplateOption', 'nails/module-cms')
-                ->setType('dropdown'),
-                ->setKey('number_of_columns'),
-                ->setLabel('No. of columns'),
-                ->setDefault(2),
-                ->setOptions([
-                    '2' => '2 Columns',
-                    '3' => '3 Columns',
-                    '4' => '4 Columns',
-                ]),
-        ];
-    }
-}
-```
-
-### Overriding templates provided by modules
-
-It's possible for the app to override any template provided by a module. When the Template loader discovers templates it will automatically look for a template of the same name under the `App\Cms\Template` namespace and load that instead of the discovered template. It is then up to the template author to use inheritance as they please to customise the template.
-
-The following example shows the default `Fullwidth` template being overridden to change the name and description; note that the widget areas themselves remain the same (due to inheritance):
-
-```
-<?php
-
-namespace App\Cms\Template;
-
-use Nails\Factory;
-
-class Fullwidth extends \Nails\Cms\Template\Fullwidth
-{
-    public function __construct()
-    {
-        parent::__construct();
-        
         $this->label       = 'My Full Width Template';
         $this->description = 'I have overridden the default Full Width template.';
     }
