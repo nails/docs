@@ -30,6 +30,8 @@ application/modules/cms/widgets/MyWidget/
 
 `js/dropped.js` runs when an instance is added to the editor. `js/removed.js` runs after the editor confirms removal. A `.min.js` file is preferred when both are present. Both are optional. Each file is turned into a function that receives the instance's DOM element as `domElement`. `this` is the editor.
 
+You rarely need `dropped.js` to set up ordinary admin fields. Once the editor form is in the page, the widget editor calls [`refreshUi()`](../../admin/javascript/README.md#refreshing-the-ui). Admin plugins then bind themselves to the new markup.
+
 ## Creating a widget
 
 ```bash
@@ -123,6 +125,10 @@ A saved area is a list of instances:
 
 ### Javascript
 
+`dropped.js` is for behaviour the admin plugins do not already provide, such as adding and removing repeatable panels.
+
+When a widget's editor markup is inserted, the widget editor calls [`refreshUi()`](../../admin/javascript/README.md#refreshing-the-ui). That asks every admin plugin to look for new controls and bind them. A `select.select2`, a `.wysiwyg` textarea, a [toggle](../../admin/javascript/toggles.md), or a [revealer](../../admin/javascript/revealer.md) in `views/editor.php` is picked up on its own. The same refresh runs again after a widget is dragged into a new position, because sorting tears down rich text editors first.
+
 ```javascript
 // application/modules/cms/widgets/MyWidget/js/dropped.js
 
@@ -186,7 +192,7 @@ The CMS module ships these widgets. Slugs match the directory names.
 
 | Slug | Label | |
 | --- | --- | --- |
-| `richtext` | Rich Text | CKEditor field `body`, wrapped in `.cms-widget-richtext`. See [Rich Text](rich-text.md). |
+| `richtext` | Rich Text | CKEditor 4 field `body`, wrapped in `.cms-widget-richtext`. A [block](../blocks.md) of type rich text uses `form_field_wysiwyg()` and is separate from this widget. |
 | `html` | Plain Text | Unfiltered HTML in `body`, wrapped in `.cms-widget-html`. |
 | `blockquote` | Blockquote | `quote`, `cite_text`, and `cite_url`. |
 | `table` | Table | Handsontable editor. `tblData` is the cell JSON; `tblAttr` is extra markup on the `<table>`. |

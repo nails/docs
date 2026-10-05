@@ -116,7 +116,6 @@
   * [Housekeeping](modules/cdn/housekeeping.md)
 * [CMS](modules/cms/README.md)
   * [Widgets](modules/cms/widgets/README.md)
-    * [Rich Text](modules/cms/widgets/rich-text.md)
   * [Areas](modules/cms/areas.md)
   * [Blocks](modules/cms/blocks.md)
   * [Menus](modules/cms/menus.md)
