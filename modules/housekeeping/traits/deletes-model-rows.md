@@ -94,10 +94,10 @@ protected function optimizeAfter(): bool
 ## Behaviour
 
 1. Log `TABLE {table} batch_size={n} dry_run={true|false}`.
-2. Fetch a page of matching rows, ordered by id, selecting only the audit columns.
+2. Fetch a batch of matching rows with `id >` the last id seen, ordered by id, selecting only the audit columns. Dry-run and real runs use the same cursor, so a row is visited at most once.
 3. Write a `DELETE id=… col=…` line (and a console line) for each row.
-4. If this is not a dry-run, `deleteMany()` those ids, then fetch page 1 again (the previous rows are gone). On dry-run, advance the page instead.
-5. Repeat until a page comes back empty.
+4. If this is not a dry-run, `deleteMany()` those ids.
+5. Repeat until a batch comes back empty. If `$oContext->shouldStop()` is true at the start of a batch, log `ABORTED` and return `Result::fail`.
 6. Optionally `OPTIMIZE TABLE`.
 7. Return `Result::ok($iProcessed)`.
 
