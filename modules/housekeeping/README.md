@@ -90,6 +90,8 @@ nails make:housekeeping:routine AnonymiseGuests
 | `writeln($sLine)` | Write to the console when one is attached (no-op in admin). |
 | `logger()` | The housekeeping `Logger` service, if you need more than `log()`. |
 | `output()` | The Symfony console output, or `null`. |
+| `shouldStop()` | `true` when this routine has used its time budget (`HOUSEKEEPING_ROUTINE_BUDGET`, default 1800 seconds). `0` disables the check. Cooperative: long loops must call it; it does not kill the process. |
+| `abort($processed, $failed)` | Log `ABORTED` and return `Result::fail`. Call this when `shouldStop()` is true. |
 
 `Result` reports what happened. The orchestrator writes a `SUMMARY` line from it and records last-run metadata (except on dry-run).
 
@@ -217,6 +219,7 @@ Retention is config-only. There is no Admin UI for these values — set them in 
 
 | Key | Default | Module |
 |---|---|---|
+| `HOUSEKEEPING_ROUTINE_BUDGET` | `1800` (seconds) | Housekeeping (`0` disables) |
 | `EMAIL_ARCHIVE_RETENTION_DAYS` | `0` (disabled) | [Email](../email.md#housekeeping) |
 | `ADMIN_CHANGELOG_RETENTION_DAYS` | `0` (disabled) | [Admin](../admin/housekeeping.md) |
 | `ADMIN_SESSION_RETENTION` | `3600` | [Admin](../admin/housekeeping.md) |
