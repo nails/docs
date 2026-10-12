@@ -93,7 +93,7 @@ nails make:housekeeping:routine AnonymiseGuests
 | `shouldStop()` | `true` when this routine has used its time budget (`HOUSEKEEPING_ROUTINE_BUDGET`, default 1800 seconds). `0` disables the check. Cooperative: long loops must call it; it does not kill the process. |
 | `abort($processed, $failed)` | Log `ABORTED` and return `Result::fail`. Call this when `shouldStop()` is true. |
 
-`Result` reports what happened. The orchestrator writes a `SUMMARY` line from it and records last-run metadata (except on dry-run).
+`Result` reports what happened. The orchestrator writes a `SUMMARY` line from it and records last-run metadata for every real attempt, including a returned failure or a thrown exception. A dry-run is not recorded.
 
 ```php
 return Result::ok($iProcessed);                          // success
@@ -178,12 +178,25 @@ nails housekeeping:run --routine=App\\Housekeeping\\AnonymiseGuests
 
 | Invocation | What runs |
 |---|---|
-| `housekeeping:run` | Enabled routines whose cron expression is due in the current environment |
+| `housekeeping:run` | Enabled routines that are due in the current environment |
 | `housekeeping:run --force` | Every discovered routine, including disabled ones and those restricted to another environment |
 | `housekeeping:run --routine=X` | That routine if it is enabled (due-ness is ignored) |
 | `housekeeping:run --routine=X --force` | That routine even if it is disabled |
 
 `--routine` accepts a fully-qualified class name or the short class name. `--dry-run` writes the same audit lines with `dry_run=true` and does not delete, unlink, gzip, or truncate. Last-run metadata is not updated on a dry-run.
+
+### When a routine is due
+
+A run reads the clock once, truncates it to the minute, and judges every routine against that instant. A routine that takes longer than a minute cannot push a later routine out of the minute the run started in.
+
+A routine is due when it is enabled, allowed in the current environment, and either of these is true:
+
+- it has never completed a real run
+- its latest scheduled time — including the reference minute, when that minute matches — is later than its last real run
+
+A failed attempt is recorded, so the routine waits for its next scheduled time. A dry-run is not recorded, and a stamp flagged as a dry-run does not count.
+
+The next `housekeeping:run` catches up anything that missed its window (a slow neighbour, a lock, a deploy, or downtime). Catch-up runs the routine once, for its latest scheduled time. Retention and archive routines then process everything currently past their threshold. The first run after a routine is deployed runs it immediately, because it has no stamp yet. `--force` and `--routine` do not consult this check.
 
 ## Audit log
 
