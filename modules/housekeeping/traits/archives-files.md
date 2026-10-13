@@ -68,7 +68,7 @@ class LogFilesArchive extends Base
     const DESCRIPTION          = 'Compresses log files older than the configured archive threshold';
     const CRON_EXPRESSION      = '0 0 * * *';
     const CONFIG_ARCHIVE_DAYS  = 'LOG_ARCHIVE';
-    const DEFAULT_ARCHIVE_DAYS = 14;
+    const DEFAULT_ARCHIVE_DAYS = 7;
 
     protected function directory(): string
     {
@@ -149,7 +149,7 @@ The zlib extension is required. It is listed as `ext-zlib` on `nails/module-hous
 
 ```
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> START
-INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> DIRECTORY /var/app/application/logs/ pattern=*.php older_than_days=14 suffix=.gz dry_run=false
+INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> DIRECTORY /var/app/application/logs/ pattern=*.php older_than_days=7 suffix=.gz dry_run=false
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> ARCHIVE /var/app/application/logs/log-2026-08-01.php -> /var/app/application/logs/log-2026-08-01.php.gz
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> SUMMARY processed=12 failed=0 success=true dry_run=false duration_ms=40
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> FINISH

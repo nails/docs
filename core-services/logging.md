@@ -33,11 +33,11 @@ The housekeeping module then takes those files through three states:
 
 | State | What | Default |
 |---|---|---|
-| Hot | Uncompressed `*.php`, easy to `grep` / tail | Newer than `LOG_ARCHIVE` (14 days) |
+| Hot | Uncompressed `*.php`, easy to `grep` / tail | Newer than `LOG_ARCHIVE` (7 days) |
 | Cold | Gzipped `*.php.gz`, kept in case | Older than `LOG_ARCHIVE`, newer than `LOG_RETENTION` |
-| Purged | Deleted | Older than `LOG_RETENTION` (180 days) |
+| Purged | Deleted | Older than `LOG_RETENTION` (90 days) |
 
-Set `LOG_ARCHIVE=0` to skip compression. Both keys are independent; see [Housekeeping](../modules/housekeeping/README.md).
+Set `LOG_ARCHIVE=0` to skip compression. Set `LOG_RETENTION=0` to keep logs indefinitely. Both keys are independent; see [Housekeeping](../modules/housekeeping/README.md).
 
 ## Alternative logs
 
