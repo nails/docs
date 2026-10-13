@@ -200,7 +200,7 @@ The next `housekeeping:run` catches up anything that missed its window (a slow n
 
 ## Audit log
 
-Each run appends to `application/logs/housekeeping-YYYY-MM-DD.php`. The orchestrator always writes `START`, `SUMMARY`, and `FINISH`; the routine (or its trait) writes the lines in between.
+A minute with nothing due writes nothing: no banner and no discovery line. A routine that runs appends to `application/logs/housekeeping-YYYY-MM-DD.php`. The orchestrator writes `START`, `SUMMARY`, and `FINISH`; the routine (or its trait) writes the lines in between. The cron task does not copy a successful `housekeeping:run` into the cron log. A non-zero exit is copied in full.
 
 ```
 INFO - 2026-09-15 03:00:01 [abc123] - Nails\Cdn\Housekeeping\Tokens --> START
