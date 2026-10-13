@@ -228,12 +228,16 @@ Retention is config-only. There is no Admin UI for these values — set them in 
 | `AUTH_USER_IMPORT_DRAFT_TTL` | `86400` | [Auth](../auth/housekeeping.md) |
 | `AUTH_USER_IMPORT_RETENTION` | `2592000` | [Auth](../auth/housekeeping.md) |
 | `CDN_TRASH_RETENTION` | `180` (days) | [CDN](../cdn/housekeeping.md) |
-| `LOG_ARCHIVE` | `14` (days) | [ArchivesFiles](traits/archives-files.md) |
-| `LOG_RETENTION` | `180` (days) | [DeletesFiles](traits/deletes-files.md) |
+| `LOG_ARCHIVE` | `7` (days) | [ArchivesFiles](traits/archives-files.md) |
+| `LOG_RETENTION` | `90` (days) | [DeletesFiles](traits/deletes-files.md) |
 | `GEO_IP_CACHE_PERIOD` | `3600` | [Geo-IP](../other/geo-ip/housekeeping.md) |
 | `GEO_CODE_CACHE_PERIOD` | `15552000` (180 days) | [Geo-code](../other/geo-code/housekeeping.md) |
 
 The Email archive previously used the `retention_period` app setting. That value is still honoured when `EMAIL_ARCHIVE_RETENTION_DAYS` is not set, but using it emits a deprecation notice. Config always wins when both are present.
+
+{% hint style="warning" %}
+**Behaviour change.** Apps that do not set `LOG_ARCHIVE` or `LOG_RETENTION` will, on the next midnight run, gzip logs older than 7 days and delete logs older than 90 days. That includes files between 90 and 180 days old, which the previous defaults kept. Set `LOG_ARCHIVE` and `LOG_RETENTION` before upgrading if you need the previous windows (14 and 180). `LOG_RETENTION=0` keeps every log.
+{% endhint %}
 
 ## First-party routines
 
@@ -249,8 +253,8 @@ Official modules ship their own routines under `src/Housekeeping/`. The orchestr
 
 The housekeeping module's own log routines are documented with the traits they use:
 
-- `Nails\Housekeeping\Housekeeping\LogFilesArchive` — [ArchivesFiles](traits/archives-files.md); compresses `*.php` older than `LOG_ARCHIVE` days (default 14). Set `LOG_ARCHIVE=0` to keep logs uncompressed until they are purged.
-- `Nails\Housekeeping\Housekeeping\LogFiles` — [DeletesFiles](traits/deletes-files.md); deletes `*.php` and `*.php.gz` older than `LOG_RETENTION` days (default 180).
+- `Nails\Housekeeping\Housekeeping\LogFilesArchive` — [ArchivesFiles](traits/archives-files.md); compresses `*.php` older than `LOG_ARCHIVE` days (default 7). Set `LOG_ARCHIVE=0` to keep logs uncompressed until they are purged.
+- `Nails\Housekeeping\Housekeeping\LogFiles` — [DeletesFiles](traits/deletes-files.md); deletes `*.php` and `*.php.gz` older than `LOG_RETENTION` days (default 90). Set `LOG_RETENTION=0` to keep logs indefinitely.
 
-Together they take log files **hot** (uncompressed, easy to parse) → **cold** (gzipped, kept in case) → **purged**. The two thresholds are independent: a file past retention is deleted even if it was never archived, and `LOG_ARCHIVE=0` leaves everything hot until purge. Both run at midnight; discovery order runs the purge first so files already past retention are not compressed only to be deleted the next day.
+Together they take log files **hot** (uncompressed, easy to parse) → **cold** (gzipped, kept in case) → **purged**. The two thresholds are independent: a file past retention is deleted even if it was never archived, and `LOG_ARCHIVE=0` leaves everything hot until purge. `LOG_RETENTION=0` never deletes. Both run at midnight; discovery order runs the purge first so files already past retention are not compressed only to be deleted the next day.
 

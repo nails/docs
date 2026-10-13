@@ -54,17 +54,21 @@ use Nails\Common\Service\Logger as CommonLogger;
 use Nails\Config;
 use Nails\Factory;
 use Nails\Housekeeping\Routine\Base;
+use Nails\Housekeeping\Routine\Context;
+use Nails\Housekeeping\Routine\Result;
 use Nails\Housekeeping\Traits\DeletesFiles;
 
 class LogFiles extends Base
 {
-    use DeletesFiles;
+    use DeletesFiles {
+        execute as purgeFiles;
+    }
 
     const LABEL                  = 'Log files';
     const DESCRIPTION            = 'Deletes log files older than the configured retention period, including compressed archives';
     const CRON_EXPRESSION        = '0 0 * * *';
     const CONFIG_RETENTION_DAYS  = 'LOG_RETENTION';
-    const DEFAULT_RETENTION_DAYS = 180;
+    const DEFAULT_RETENTION_DAYS = 90;
 
     protected function directory(): string
     {
@@ -85,8 +89,24 @@ class LogFiles extends Base
     {
         return (int) Config::get(static::CONFIG_RETENTION_DAYS, static::DEFAULT_RETENTION_DAYS);
     }
+
+    public function execute(Context $oContext): Result
+    {
+        $iDays = $this->olderThanDays();
+        if ($iDays < 1) {
+            $oContext
+                ->writeln('Log retention disabled')
+                ->log('DISABLED ' . static::CONFIG_RETENTION_DAYS . '=0');
+
+            return Result::ok(0, 'Log retention disabled');
+        }
+
+        return $this->purgeFiles($oContext);
+    }
 }
 ```
+
+`LOG_RETENTION=0` on that routine disables deletion, so logs are kept indefinitely. The trait itself still treats `0` as every matching file.
 
 ## Required methods
 
@@ -124,7 +144,7 @@ Age is computed from `DateTime::diff()` on the file’s mtime, so a file modifie
 
 ```
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> START
-INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> DIRECTORY /var/app/application/logs/ pattern=*.php,*.php.gz older_than_days=180 dry_run=false
+INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> DIRECTORY /var/app/application/logs/ pattern=*.php,*.php.gz older_than_days=90 dry_run=false
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> UNLINK /var/app/application/logs/log-2025-01-01.php.gz
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> SUMMARY processed=12 failed=0 success=true dry_run=false duration_ms=40
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFiles --> FINISH
