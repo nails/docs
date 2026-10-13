@@ -37,7 +37,7 @@ The housekeeping module then takes those files through three states:
 | Cold | Gzipped `*.php.gz`, kept in case | Older than `LOG_ARCHIVE`, newer than `LOG_RETENTION` |
 | Purged | Deleted | Older than `LOG_RETENTION` (90 days) |
 
-Set `LOG_ARCHIVE=0` to skip compression. Set `LOG_RETENTION=0` to keep logs indefinitely. Both keys are independent; see [Housekeeping](../modules/housekeeping/README.md).
+Set `LOG_ARCHIVE=0` to skip compression for files without a positive channel override. Set `LOG_RETENTION=0` to keep those logs. A channel key such as `LOG_RETENTION_CRON` or `LOG_ARCHIVE_CDN_ISSUES` overrides the catch-all for that channel, and a value below 1 disables that channel only. Both families of keys are independent; see [Housekeeping](../modules/housekeeping/README.md).
 
 ## Alternative logs
 
