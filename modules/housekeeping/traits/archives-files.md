@@ -54,15 +54,11 @@ use Nails\Common\Service\Logger as CommonLogger;
 use Nails\Config;
 use Nails\Factory;
 use Nails\Housekeeping\Routine\Base;
-use Nails\Housekeeping\Routine\Context;
-use Nails\Housekeeping\Routine\Result;
 use Nails\Housekeeping\Traits\ArchivesFiles;
 
 class LogFilesArchive extends Base
 {
-    use ArchivesFiles {
-        execute as archiveFiles;
-    }
+    use ArchivesFiles;
 
     const LABEL                = 'Log file archives';
     const DESCRIPTION          = 'Compresses log files older than the configured archive threshold';
@@ -86,24 +82,10 @@ class LogFilesArchive extends Base
     {
         return (int) Config::get(static::CONFIG_ARCHIVE_DAYS, static::DEFAULT_ARCHIVE_DAYS);
     }
-
-    public function execute(Context $oContext): Result
-    {
-        $iDays = $this->olderThanDays();
-        if ($iDays < 1) {
-            $oContext
-                ->writeln('Log archive disabled')
-                ->log('DISABLED ' . static::CONFIG_ARCHIVE_DAYS . '=0');
-
-            return Result::ok(0, 'Log archive disabled');
-        }
-
-        return $this->archiveFiles($oContext);
-    }
 }
 ```
 
-`LOG_ARCHIVE=0` on that routine disables compression so logs stay hot until `LOG_RETENTION` purges them. The trait itself treats `0` as “every matching file,” the same as [`DeletesFiles`](deletes-files.md).
+The shipped routine resolves a threshold per file: `LOG_ARCHIVE_<CHANNEL>`, then `LOG_ARCHIVE`, then `DEFAULT_ARCHIVE_DAYS`. A value below 1 skips that channel only. `LOG_ARCHIVE=0` leaves files uncompressed until `LOG_RETENTION` purges them, unless that channel sets its own archive window. The trait itself treats `0` as “every matching file,” the same as [`DeletesFiles`](deletes-files.md).
 
 ## Required methods
 
@@ -149,8 +131,9 @@ The zlib extension is required. It is listed as `ext-zlib` on `nails/module-hous
 
 ```
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> START
-INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> DIRECTORY /var/app/application/logs/ pattern=*.php older_than_days=7 suffix=.gz dry_run=false
+INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> DIRECTORY /var/app/application/logs/ pattern=*.php older_than_days=per-file suffix=.gz dry_run=false
 INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> ARCHIVE /var/app/application/logs/log-2026-08-01.php -> /var/app/application/logs/log-2026-08-01.php.gz
+INFO - 2026-09-15 00:00:01 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> CHANNEL log older_than_days=7 processed=12 dry_run=false
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> SUMMARY processed=12 failed=0 success=true dry_run=false duration_ms=40
 INFO - 2026-09-15 00:00:02 [abc123] - Nails\Housekeeping\Housekeeping\LogFilesArchive --> FINISH
 ```

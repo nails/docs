@@ -236,7 +236,7 @@ Retention is config-only. There is no Admin UI for these values — set them in 
 The Email archive previously used the `retention_period` app setting. That value is still honoured when `EMAIL_ARCHIVE_RETENTION_DAYS` is not set, but using it emits a deprecation notice. Config always wins when both are present.
 
 {% hint style="warning" %}
-**Behaviour change.** Apps that do not set `LOG_ARCHIVE` or `LOG_RETENTION` will, on the next midnight run, gzip logs older than 7 days and delete logs older than 90 days. That includes files between 90 and 180 days old, which the previous defaults kept. Set `LOG_ARCHIVE` and `LOG_RETENTION` before upgrading if you need the previous windows (14 and 180). `LOG_RETENTION=0` keeps every log.
+**Behaviour change.** Apps that do not set `LOG_ARCHIVE` or `LOG_RETENTION` will, on the next midnight run, gzip logs older than 7 days and delete logs older than 90 days. That includes files between 90 and 180 days old, which the previous defaults kept. Set `LOG_ARCHIVE` and `LOG_RETENTION` before upgrading if you need the previous windows (14 and 180). `LOG_RETENTION=0` keeps logs that do not have a positive per-channel threshold.
 {% endhint %}
 
 ## First-party routines
@@ -253,8 +253,18 @@ Official modules ship their own routines under `src/Housekeeping/`. The orchestr
 
 The housekeeping module's own log routines are documented with the traits they use:
 
-- `Nails\Housekeeping\Housekeeping\LogFilesArchive` — [ArchivesFiles](traits/archives-files.md); compresses `*.php` older than `LOG_ARCHIVE` days (default 7). Set `LOG_ARCHIVE=0` to keep logs uncompressed until they are purged.
-- `Nails\Housekeeping\Housekeeping\LogFiles` — [DeletesFiles](traits/deletes-files.md); deletes `*.php` and `*.php.gz` older than `LOG_RETENTION` days (default 90). Set `LOG_RETENTION=0` to keep logs indefinitely.
+- `Nails\Housekeeping\Housekeeping\LogFilesArchive` — [ArchivesFiles](traits/archives-files.md); compresses `*.php` older than `LOG_ARCHIVE` days (default 7). Set `LOG_ARCHIVE=0` to keep logs uncompressed until they are purged, unless a channel key says otherwise.
+- `Nails\Housekeeping\Housekeeping\LogFiles` — [DeletesFiles](traits/deletes-files.md); deletes `*.php` and `*.php.gz` older than `LOG_RETENTION` days (default 90). Set `LOG_RETENTION=0` to keep logs that do not have a positive channel threshold.
 
-Together they take log files **hot** (uncompressed, easy to parse) → **cold** (gzipped, kept in case) → **purged**. The two thresholds are independent: a file past retention is deleted even if it was never archived, and `LOG_ARCHIVE=0` leaves everything hot until purge. `LOG_RETENTION=0` never deletes. Both run at midnight; discovery order runs the purge first so files already past retention are not compressed only to be deleted the next day.
+A channel key overrides the catch-all for that file. The channel is the filename before the date, uppercased, with every non-alphanumeric character replaced by an underscore: `cron-2026-01-01.php` reads `LOG_RETENTION_CRON`, and `cdn-issues-2025-10-16-10-42-07.php` reads `LOG_RETENTION_CDN_ISSUES`. `.php` and `.php.gz` are the same channel. A value below 1 disables that channel only. Filenames that do not match `<channel>-YYYY-MM-DD.php` use the catch-all.
+
+```dotenv
+LOG_ARCHIVE=2
+LOG_RETENTION=90
+LOG_RETENTION_CRON=30
+LOG_RETENTION_HOUSEKEEPING=30
+LOG_RETENTION_MFA=365
+```
+
+Together they take log files **hot** (uncompressed, easy to parse) → **cold** (gzipped, kept in case) → **purged**. The two thresholds are independent: a file past retention is deleted even if it was never archived, and `LOG_ARCHIVE=0` leaves everything hot until purge unless that channel sets its own archive window. `LOG_RETENTION=0` keeps files with no positive channel override. Both run at midnight; discovery order runs the purge first so files already past retention are not compressed only to be deleted the next day.
 
