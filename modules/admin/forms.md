@@ -51,6 +51,8 @@ Typical classes:
 | `table-rounded`  | Opt-in radius on the corner cells. Fieldset cards already have a radius, so flush fieldset tables ignore this class. |
 | `table-sticky`   | Sticky header under the admin topbar |
 
+A table that ends a fieldset sits flush with the card. The card's border keeps the table's bottom margin inside the card, so that margin is removed.
+
 Cells are vertically centred. `tfoot` is white so [dynamic-table](javascript/dynamic-table.md) add-row buttons sit on a clean row. Put “+ Add Item” in `<tfoot>`, not under the table.
 
 ## Tips and required
