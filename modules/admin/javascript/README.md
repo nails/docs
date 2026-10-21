@@ -112,6 +112,7 @@ The following plugins are bundled with admin, and are available for you to use:
 * [Modal](modal.md) – programmatic and markup-driven dialogs
 * [Modalize](modalize.md) – edit a hidden chunk of a form in a modal
 * [Notes](notes.md) – keep notes about anything
+* [Progress](progress.md) – markup-driven progress bars
 * [Repeater](repeater.md) – build repeatable blocks using templates
 * [Revealer](revealer.md) – show and hide fields from a checkbox or select
 * [Screen Tabs](screen-tabs.md) – top-level workspaces on an edit screen
