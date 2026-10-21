@@ -78,6 +78,7 @@
     * [Modal](modules/admin/javascript/modal.md)
     * [Modalize](modules/admin/javascript/modalize.md)
     * [Notes](modules/admin/javascript/notes.md)
+    * [Progress](modules/admin/javascript/progress.md)
     * [Repeater](modules/admin/javascript/repeater.md)
     * [Revealer](modules/admin/javascript/revealer.md)
     * [Screen Tabs](modules/admin/javascript/screen-tabs.md)
