@@ -66,3 +66,14 @@ The module always applies its own exclusion, on top of any class you add:
 - A column whose name ends in `.slug` is read-only (`/\.slug$/`).
 
 A table that does not have exactly one primary-key column is read-only as well, with the reason `no primary key`. That rule is applied by the schema scan, separate from exclusion classes.
+
+## Shipped with Nails
+
+Each Nails module that owns searchable columns ships a `Package` class under `src/FindReplace/Exclusion`. Those classes follow the same rules an app should use:
+
+- Hide secrets, sessions, caches, logs, and archives. A search leaves those columns out.
+- Hide or lock functional columns such as hashes, drivers, mime types, and JSON that the module's own screens must keep valid.
+- Mark contact data (email, telephone, IP, VAT number) and similar identifiers read-only. A search shows the hit; replacement is left to the screen that owns the row.
+- Leave user-authored content searchable and replaceable: names, labels, bodies, quotes, CMS copy, form answers, comments, chat messages.
+
+Module classes rely on the built-in `.slug`, `.token`, and `.ref` rules. Columns that only look similar (`draft_slug`, `token_stats`, `claim_token`) are listed explicitly. App-owned columns, including those on `user_meta_app`, stay the app's exclusion.
