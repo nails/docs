@@ -27,7 +27,9 @@ The navigation item is shown to anyone with Search. Writing also checks Replace,
 
 **Advanced** limits the scan. Put one entry per line. The entries use the same syntax as [exclusions](exclusions.md#entries). **Limit to tables** with a blank value searches every searchable column. **Exclude tables** is applied after that.
 
-Submitting queues the search. It stays **Pending** until a queue worker runs it (`nails queue:work`), then **Running**, then **Complete** or **Failed**. The list refreshes on its own. Progress is the number of tables scanned against the number of tables in this search.
+Submitting queues the search on the [configured queue](../find-replace.md#queue). It stays **Pending** until a worker for that queue runs it, then **Running**, then **Complete** or **Failed**. The list refreshes on its own. Progress is the number of tables scanned against the number of tables in this search.
+
+The index shows a warning while that queue has no live worker, using the same check as the queue dashboard alert. Searches can still be submitted. They stay pending until a worker is processing the queue. If the configured queue does not exist, the warning says so and the search is not saved.
 
 When the search finishes, the user who queued it is emailed.
 
