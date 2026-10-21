@@ -69,7 +69,7 @@ A table that does not have exactly one primary-key column is read-only as well, 
 
 ## Shipped with Nails
 
-Each Nails module that owns searchable columns ships a `Package` class under `src/FindReplace/Exclusion`. Those classes follow the same rules an app should use:
+Each Nails module that owns searchable columns ships a `Package` class under `src/FindReplace/Exclusion`. A module that declares an exclusion lists `nails/module-find-replace` in `require-dev` so tests and phpstan load the interface. Those classes follow the same rules an app should use:
 
 - Hide secrets, sessions, caches, logs, and archives. A search leaves those columns out.
 - Hide or lock functional columns such as hashes, drivers, mime types, and JSON that the module's own screens must keep valid.
