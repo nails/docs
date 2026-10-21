@@ -60,6 +60,14 @@ A serialised cell is included in the results so it can be found. The value is le
 A revert writes the previous value only when the live cell is still exactly the recorded value. A later edit in that cell is left as it is.
 {% endhint %}
 
+## Queue
+
+Admin searches run as a queue job. The queue is `default` unless `FIND_REPLACE_QUEUE` names another alias or queue class, such as `priority` or `App\Queue\Queues\Reports`. A blank value also uses `default`.
+
+`nails queue:work` listens to `default`. Pass `--queue` when the search uses another queue.
+
+The Find & Replace index shows a warning when that queue has no live worker. A worker is live when its heartbeat is within `QUEUE_WORKER_HEARTBEAT_STALE` seconds (300 by default) and it was started for that queue. This is the same check as the queue dashboard alert. A stale worker, or a worker listening to a different queue, leaves the warning in place. The form can still be submitted; the search stays pending until a worker picks it up. If `FIND_REPLACE_QUEUE` does not name a queue, the index says so and the search is not saved.
+
 ## Who can use it
 
 Admin access is two permissions in the Find & Replace group, described on the [Admin](find-replace/admin.md) page. The command line has no separate permission: anyone who can run `nails` against the application can search, replace, and revert.
