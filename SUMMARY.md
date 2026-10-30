@@ -171,6 +171,7 @@
   * [Category](modules/other/category.md)
   * [Chat](modules/other/chat.md)
   * [Comment](modules/other/comment.md)
+  * [CSP](modules/other/csp.md)
   * [Currency](modules/other/currency.md)
   * [Custom Forms](modules/other/custom-forms.md)
   * [Data Migration](modules/other/data-migration/README.md)
