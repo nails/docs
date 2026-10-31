@@ -206,6 +206,7 @@
   * [Redirect](modules/other/redirect.md)
   * [Related Content](modules/other/related-content.md)
   * [Release Notes](modules/other/release-notes.md)
+  * [RSS](modules/other/rss.md)
   * [SEO](modules/other/seo.md)
   * [Sitemap](modules/other/sitemap.md)
   * [Survey](modules/other/survey.md)
