@@ -101,6 +101,8 @@ Admin shows a dropdown for each facet that has values on the outstanding results
 
 `badges()` returns facet keys to show on an admin result row, in that order. The first resolver to name a key wins the position; a later duplicate is skipped. The `resolver` key is ignored, because the row already shows the entity label. A hit with no value for a key shows nothing for it.
 
+Badges take their colour from the value, matching the admin index pages: `PUBLISHED` is green, `DRAFT` amber, and `DELETED` red, in any letter case. Every other value is grey.
+
 ## Filtering on what a resolver named
 
 `--resolved-only` keeps hits whose entity label is set, and drops the `table.column` fallback. Combine it with `--facet` when a replace should stay inside one kind of record:
