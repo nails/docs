@@ -48,7 +48,7 @@ The results screen shows the term, the replacement, whether the search was case-
 
 **Fields** filters on whether a row can be replaced: **Replaceable**, **Read-only**, or **Any** for both. When resolvers have stored facets, each facet with at least one value is a filter too. **Any** leaves that filter out. Several filters combine: a row must match all of them. The counts are outstanding rows (results that have not been replaced yet). The list is 50 rows per page.
 
-Each row shows the record, the column, a snippet of the match, and a preview of the replacement. Badges come from resolvers. The line under the title is the entity label and id, or the table and primary key when no resolver named the row. Read-only rows show their reason and have no checkbox. Action buttons are the links the resolver attached.
+Each row shows the record, the column, a snippet of the match, and a preview of the replacement. Badges come from resolvers. The line under the title is the entity label and id, or the table and primary key when no resolver named the row. Read-only rows have a lock instead of a checkbox, and show their reason under the column name. Action buttons are the links the resolver attached.
 
 **Export CSV** downloads the outstanding rows for the current filters. The file is `find-replace.csv`, with the columns described on the [console](console.md#find-replacesearch) page.
 
