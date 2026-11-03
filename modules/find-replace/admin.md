@@ -40,7 +40,7 @@ When the search finishes, the user who queued it is emailed.
 
 The search row is already updated if the email cannot be sent. The job is not retried. **Run again** clears the saved results and queues the same term, replacement, case sensitivity, and table limits.
 
-**Keep** holds the search past the [90-day housekeeping](housekeeping.md) window. **Stop keeping** puts it back on that window, counted from the last run. **Delete** asks for confirmation, then removes the search and its results. Change rows are kept until their own housekeeping run, and can still be reverted from **My changes** or the command line.
+**View results** opens the [results screen](#results) for the search, as does clicking its term. **Keep** holds the search past the [90-day housekeeping](housekeeping.md) window. **Stop keeping** puts it back on that window, counted from the last run. **Delete** asks for confirmation, then removes the search and its results. Change rows are kept until their own housekeeping run, and can still be reverted from **My changes** or the command line.
 
 ## Results
 
