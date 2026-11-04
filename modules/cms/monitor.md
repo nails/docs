@@ -26,7 +26,9 @@ Each mapper returns a label, a usage count, and a list of `Nails\Cms\Factory\Mon
 
 ### Widget trait
 
-`Nails\Cms\Traits\Monitor\Widget` runs a `JSON_CONTAINS` query. By default it looks for the widget slug at `$[*].slug`. Override `getJsonPath()` when the JSON is shaped differently.
+`Nails\Cms\Traits\Monitor\Widget` runs a `JSON_CONTAINS` query. By default it looks for the widget slug at `$[*].slug`. Override `getJsonPath()` when the JSON is shaped differently. The slug and the path are escaped, so a slug may contain any character.
+
+A mapper that builds its own SQL should not interpolate the slug. `Nails\Cms\Helper\Monitor::jsonString()` returns the slug as a JSON string (as MySQL prints it), for `JSON_CONTAINS`. `likePattern()` returns a `LIKE` pattern for that string, with `%` and `_` escaped, to use with `ESCAPE '!'`. Neither result is SQL-quoted: pass it through the Database service's `escape()`.
 
 ```php
 namespace App\Cms\Monitor\Widget;

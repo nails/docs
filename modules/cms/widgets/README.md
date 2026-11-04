@@ -161,7 +161,7 @@ Use this when a module ships a widget the app should not offer at all. The usual
 
 `HIDDEN = true` leaves the widget out of the editor sidebar (`Widget::getAvailable()`). `getBySlug()` loads hidden widgets, so a placement that is already saved still renders, and `cmsWidget()` can still target the slug.
 
-The editor's catalogue is that same sidebar list. Opening an area which already contains a hidden widget shows the instance as missing, because the editor cannot look the slug up. Choose `DEPRECATED` when editors still need to open and adjust existing placements.
+The editor's catalogue is that same sidebar list. Opening an area which already contains a hidden widget shows the instance as locked, because the editor cannot look the slug up (see [Instances the editor cannot edit](#instances-the-editor-cannot-edit)). The instance is saved unchanged. Choose `DEPRECATED` when editors still need to open and adjust existing placements.
 
 ### Deprecated
 
@@ -185,6 +185,10 @@ class MyWidget extends WidgetBase
     }
 }
 ```
+
+### Instances the editor cannot edit
+
+An area can hold a slug the editor does not offer: a hidden or disabled widget, a widget whose code has been removed, or a widget created in the new widget editor. The editor shows each one as a locked placeholder naming the slug, and a warning at the top of the area. A locked instance keeps its slug and data exactly as loaded and is saved unchanged when the editor closes. It can be dragged to a new position by its lock icon, or removed with **Remove?**.
 
 ## Supplied widgets
 
