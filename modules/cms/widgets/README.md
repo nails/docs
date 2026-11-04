@@ -6,6 +6,8 @@ description: Build, place, and retire CMS widgets, including those supplied by o
 
 Widgets are the blocks of content an editor drops into a [widget area](../areas.md), a [page template](../pages/templates.md), or any admin field that uses the widget editor. A widget is a class plus two views: one for admin, one for the front end.
 
+Widgets written as PHP classes under a `Cms\Widgets` namespace are the WidgetEditor (v2) system. They are described in [WidgetEditor (v2) PHP](v2.md). The rest of this page covers the v1 system.
+
 ## Anatomy
 
 App widgets live under `application/modules/cms/widgets/{slug}/`. Installed modules use the same layout under `{module}/cms/widgets/{slug}/`.
