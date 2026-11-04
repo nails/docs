@@ -26,7 +26,13 @@ Each mapper returns a label, a usage count, and a list of `Nails\Cms\Factory\Mon
 
 ### Widget trait
 
-`Nails\Cms\Traits\Monitor\Widget` runs a `JSON_CONTAINS` query. By default it looks for the widget slug at `$[*].slug`. Override `getJsonPath()` when the JSON is shaped differently. The slug and the path are escaped, so a slug may contain any character.
+`Nails\Cms\Traits\Monitor\Widget` runs a `JSON_CONTAINS` query. By default it looks for the widget slug at `$**.slug`, which finds widgets at any depth, including those nested in container slots. Override `getJsonPath()` when the JSON is shaped differently. The slug and the path are escaped, so a slug may contain any character.
+
+The path was `$[*].slug` before containers. An app mapper that still uses it only finds top-level widgets, so change it to `$**.slug`. A `slug` key in a widget's own data whose value matches a widget slug is a rare false positive, and it is accepted.
+
+### WidgetEditor (v2) widgets
+
+The widget monitor also lists [WidgetEditor (v2)](widgets/v2.md) widgets. The service wraps each one in `Nails\Cms\WidgetEditor\Monitor\Adapter`, which implements the v1 `Nails\Cms\Interfaces\Widget` interface, so existing mappers accept it without change. The service runs each mapper once per slug (the canonical slug, then each alias) and sums the results. A row that holds two of those slugs is counted twice. That is accepted, and rare.
 
 A mapper that builds its own SQL should not interpolate the slug. `Nails\Cms\Helper\Monitor::jsonString()` returns the slug as a JSON string (as MySQL prints it), for `JSON_CONTAINS`. `likePattern()` returns a `LIKE` pattern for that string, with `%` and `_` escaped, to use with `ESCAPE '!'`. Neither result is SQL-quoted: pass it through the Database service's `escape()`.
 

@@ -57,3 +57,5 @@ Renders a widget list you already hold (array or JSON) and returns HTML.
 ### cmsWidget($sSlug, $aData = [])
 
 Renders one widget by slug. Hidden widgets resolve. A disabled or unknown slug returns an empty string. See [Widgets](widgets/#rendering-one-widget).
+
+`$sSlug` also accepts a [WidgetEditor (v2)](widgets/v2.md) stored slug (`App.Cms.Widgets.Heading`) or a v2 class name, such as `cmsWidget(\App\Cms\Widgets\Heading::class, [...])`. Legacy slugs keep working.
