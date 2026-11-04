@@ -14,9 +14,15 @@ The page embeds the enabled versions and the active one in `#cms-widget-editor-c
 
 ## What the overlay does
 
-Opening any widget field, or a page area, opens every area on that form as tabs. The outline lists instances and their slots. Dragging a row moves it, including into another slot or, within the same session, another area. Insert, duplicate, remove, and up/down are in the bar. Undo and redo cover those commands. Consecutive edits to one instance are a single undo step.
+Opening any widget field, or a page area, opens every area on that form. The bar shows the active area's field label and how many widgets it holds; with more than one area, the label is a menu that switches between them. Undo, redo, **Insert** and **Done** are on the right.
 
-The organiser lists widgets the active area allows, with favourites first. Hidden and deprecated widgets stay out of the organiser; an instance of one that is already saved can still be edited. A disabled or unknown instance is locked: it can be removed or reordered in its own list, and its stored object is kept.
+The outline on the left lists instances with a number, label and a line of their text, and each slot's children beneath. Dragging a row moves it: the upper half of a row drops before it, the lower half after it, and a slot's **Add to** button drops at the end of that slot. Within the same session a row can move to another area. Duplicate and remove are on each row, on the canvas toolbar, and at the top of the inspector.
+
+Removing a widget asks for confirmation in an admin modal, which also says how many widgets inside it go with it. Delete or Backspace asks for the selected widget. Undo and redo cover insert, duplicate, remove and move. Consecutive edits to one instance are a single undo step.
+
+**Insert**, the `/` key, a **+** between widgets on the canvas, and **Add widget** at the end of the page open the insert drawer. The drawer lists widgets the active area allows, with favourites first; hovering one shows its screenshot and description. A widget chosen from a **+** goes at that position; otherwise it goes after the selected widget, at the end of the selected widget's first slot when it has slots, or at the end of the area. Enter in the search inserts the first match. Hidden and deprecated widgets stay out of the organiser; an instance of one that is already saved can still be edited. A disabled or unknown instance is locked: it can be removed or reordered in its own list, and its stored object is kept.
+
+The inspector on the right shows the selected widget's label, group and description above its settings. A widget with no settings says so and points to editing its text on the page.
 
 An HTML-form widget loads its form from `POST …/inspector` and writes the field values back with the same rules as the v1 serialiser. A bridged v1 widget's `dropped` script runs once its form is placed, and its `removed` script runs before the widget is removed (see [Scripts](v2.md#scripts)). **Open in modal** moves that form into a dialog for wide controls, and closing the dialog moves it back with its values. A widget that declares fields gets its form from [Fields](#fields) instead. Nothing is written for an instance the user has not edited, so opening and closing an area leaves its JSON untouched.
 
@@ -30,13 +36,15 @@ Every change is written to the widget field straight away, and a page writes its
 
 The canvas shows each top-level instance's server-rendered preview in a same-origin iframe. The iframe is sandboxed without `allow-scripts`, so preview markup does not run script. Previews refresh 300ms after a change, and only instances whose slug or data changed are re-requested. A preview that fails shows an error card in place of the widget.
 
-The iframe loads once. A change to an instance replaces only that instance's markup, and an instance with focus is left alone until focus leaves, so the caret is not lost. Links in the canvas do not navigate.
+The canvas is drawn as a page with a maximum width. The iframe is sized to its content and the stage around it scrolls. The iframe loads once. A change to an instance replaces only that instance's markup, and the field being edited inline is left alone until editing ends. Links in the canvas do not navigate.
+
+A frame with no script does not run event listeners for real pointer or keyboard input, so the canvas does not listen inside it. An overlay in the admin page covers the iframe, finds the widget or field under the pointer with `elementFromPoint()`, and draws the hover and selection outlines, the widget toolbar and the **+** inserters between widgets. Clicking a widget selects it in the outline and the inspector; selecting one in the outline scrolls the canvas to it.
 
 ### Inline editing
 
 A widget marks its editable fields in its preview markup (see [Editable fields](#editable-fields)). In the canvas:
 
-- A **text** field is edited in place. Enter is ignored and pasted text is reduced to plain text. Each change is written to the instance straight away, and no preview is requested for it, because the canvas already shows the text.
+- A **text** field is edited in place: clicking it puts an editable copy, styled like the field, over it with the caret where the click was. Enter or Escape ends editing, as does clicking elsewhere. The text is one line, and pasted text is reduced to plain text. Each change is written to the instance straight away, and no preview is requested for it, because the canvas already shows the text.
 - A **rich** field opens in the rich text modal when clicked.
 
 ### Rich text
