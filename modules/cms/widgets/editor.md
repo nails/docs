@@ -18,7 +18,7 @@ Opening any widget field, or a page area, opens every area on that form as tabs.
 
 The organiser lists widgets the active area allows, with favourites first. Hidden and deprecated widgets stay out of the organiser; an instance of one that is already saved can still be edited. A disabled or unknown instance is locked: it can be removed or reordered in its own list, and its stored object is kept.
 
-An HTML-form widget loads its form from `POST …/inspector` and writes the field values back with the same rules as the v1 serialiser. **Open in modal** moves that form into a dialog for wide controls, and closing the dialog moves it back with its values. A fields-schema widget has no form here yet. Nothing is written for an instance the user has not edited, so opening and closing an area leaves its JSON untouched.
+An HTML-form widget loads its form from `POST …/inspector` and writes the field values back with the same rules as the v1 serialiser. **Open in modal** moves that form into a dialog for wide controls, and closing the dialog moves it back with its values. A widget that declares fields gets its form from [Fields](#fields) instead. Nothing is written for an instance the user has not edited, so opening and closing an area leaves its JSON untouched.
 
 Every change is written to the widget field straight away, and a page writes its template data on the same change. A copy is also kept in `localStorage` under `cms-widget-editor:` plus the area slugs, so a crash can be restored. Closing the editor drops that copy.
 
@@ -26,7 +26,7 @@ Every change is written to the widget field straight away, and a page writes its
 
 `form_field_cms_widgets()` accepts `allowed` and `disallowed`. A template area accepts the same through `TemplateArea::setAllowed()` and `setDisallowed()`. Entries are slugs, aliases, or `group:<label>`. The button carries them as `data-cms-rules`. The organiser hides what they forbid, and an insert or a move that would break them is refused. The server still accepts a save that breaks them.
 
-## Not in this editor yet
+## Canvas
 
 The canvas shows each top-level instance's server-rendered preview in a same-origin iframe. The iframe is sandboxed without `allow-scripts`, so preview markup does not run script. Previews refresh 300ms after a change, and only instances whose slug or data changed are re-requested. A preview that fails shows an error card in place of the widget.
 
@@ -60,8 +60,53 @@ Inline editing needs `editable()` in `render()`. A widget whose `render()` has n
 
 Scripts do not run in the canvas (see D20). A widget whose preview depends on JavaScript overrides `preview()` with static markup.
 
+### Fields
+
+A widget that declares `getFields()` gets its inspector from the list, and `getEditorForm()` is not used:
+
+```php
+public function getFields(): ?array
+{
+    return [
+        ['key' => 'sHeading', 'type' => 'text', 'label' => 'Heading', 'required' => true],
+        ['key' => 'bShowLink', 'type' => 'toggle', 'label' => 'Show link'],
+        ['key' => 'sLinkText', 'type' => 'text', 'label' => 'Link text', 'visibleWhen' => ['bShowLink' => true]],
+        ['key' => 'sTone', 'type' => 'select', 'label' => 'Tone', 'options' => ['light' => 'Light', 'dark' => 'Dark']],
+        ['key' => 'aItems', 'type' => 'repeater', 'label' => 'Items', 'min' => 1, 'max' => 3, 'fields' => [
+            ['key' => 'sText', 'type' => 'text', 'label' => 'Text', 'required' => true],
+        ]],
+    ];
+}
+```
+
+Each field has a `key` (a PHP-style name, letters, digits and underscores), a `type`, and optionally `label` (defaults to the key), `tip`, `required`, `wide`, `visibleWhen` and `default`. The types are:
+
+| Type | Control | Extra keys |
+| --- | --- | --- |
+| `text` | single line | |
+| `textarea` | multi-line text | |
+| `richtext` | Tiptap text, edited in the rich text modal | |
+| `select` | drop-down | `options`, a map of value to label; the first is the default |
+| `toggle` | checkbox | |
+| `number` | number input | `min`, `max` |
+| `cdn_object` | CDN object picker, stores the object id | `bucket` (the bucket slug) |
+| `repeater` | a list of rows, each with its own `fields` | `min`, `max`; rows cannot hold another repeater |
+
+Rules:
+
+- **`visibleWhen`** shows the field only while every named sibling has the given value, compared strictly. A hidden field keeps its value, so it comes back when the condition does. A name that is not a sibling is a schema error.
+- **`required`** shows a warning until the field has a value. It never blocks a save. A toggle is never empty.
+- **`wide`** shows the control as a one-line summary in the inspector, with **Open in modal** for the full control.
+- **`min` and `max`** are a hint. A number outside them is kept; nothing is clamped.
+- A repeater's **Add item** stops at `max`, and **Remove** stops at `min`. Rows move with **Up** and **Down**.
+- A bad schema (an unknown type, a duplicate or invalid key, a select without options, a `default` that is not an option, a repeater inside a repeater) throws `InvalidArgumentException` when the editor loads its catalogue, so it shows on the first admin request. It is a developer error, not a user one.
+
+Before a widget renders and before its inspector loads, `normalise()` fills any missing defaults, including those of each repeater row. So a field added to a widget later shows its default on existing content, and nothing is saved until the user edits it.
+
+A field can also be edited inline: call `editable()` for it in `render()`. A field inside a repeater row cannot, because there is no path to address the row, so it is edited in the inspector.
+
 ## Not in this editor yet
 
-The fields-schema inspector is not built, so a widget that declares fields is previewed and can be edited inline but has no form. It can still be added, moved and removed, and its saved data is left as it is. Content the rich text schema does not keep (tables, embeds and unknown blocks) is not shown in the modal. The raw HTML view that warns about this is not built yet. The field is written back only if the user edits it, so such content is lost only when the user saves an edit. Images and file links, through the media manager, are not in the schema yet.
+Content the rich text schema does not keep (tables, embeds and unknown blocks) is not shown in the modal. The raw HTML view that warns about this is not built yet. The field is written back only if the user edits it, so such content is lost only when the user saves an edit. Links are not in the field types yet; `cdn_object` covers images and files only.
 
-There is no browser test. `yarn test:js` in `module-cms` covers the document tree, the serialiser, the canvas document and its helpers, the area rules, and the session commands. `phpunit` covers `editable()` in preview and render mode, and the paths of nested instances.
+Automated tests: `yarn test:js` in `module-cms` covers the document tree, the serialiser, the canvas document and its helpers, the area rules, the session commands, and the field rules (visibility, required warnings, repeater rows, coercion). `phpunit` covers `editable()` in preview and render mode, the paths of nested instances, and the field schema. The inspector, the picker's event handling and the modal were checked by hand in a browser against a test area; there is no automated browser test.
