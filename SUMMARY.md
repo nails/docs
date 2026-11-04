@@ -118,6 +118,7 @@
 * [CMS](modules/cms/README.md)
   * [Widgets](modules/cms/widgets/README.md)
     * [WidgetEditor (v2) PHP](modules/cms/widgets/v2.md)
+    * [WidgetEditor (v2) editor](modules/cms/widgets/editor.md)
   * [Areas](modules/cms/areas.md)
   * [Blocks](modules/cms/blocks.md)
   * [Menus](modules/cms/menus.md)
