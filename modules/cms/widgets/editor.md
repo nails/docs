@@ -28,4 +28,6 @@ Every change is written to the widget field straight away, and a page writes its
 
 ## Not in this editor yet
 
-The canvas (iframe previews, inline editing, rich text) and the fields-schema controls are separate. There is no browser test. `yarn test:js` in `module-cms` covers the document tree, the serialiser, the area rules, and the session commands.
+The canvas shows each top-level instance's server-rendered preview in a same-origin iframe. The iframe is sandboxed without `allow-scripts`, so preview markup does not run script. Previews refresh 300ms after a change, and only instances whose slug or data changed are re-requested. A preview that fails shows an error card in place of the widget.
+
+Inline editing, rich text, and the fields-schema inspector are not in this editor yet. A widget with a fields-schema inspector can still be added, moved and removed, and its saved data is left as it is. There is no browser test. `yarn test:js` in `module-cms` covers the document tree, the serialiser, the canvas document, the area rules, and the session commands.
