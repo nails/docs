@@ -14,19 +14,21 @@ The page embeds the enabled versions and the active one in `#cms-widget-editor-c
 
 ## What the overlay does
 
-Opening any widget field, or a page area, opens every area on that form. The bar shows the active area's field label and how many widgets it holds; with more than one area, the label is a menu that switches between them. Undo, redo, **Insert** and **Done** are on the right.
+Opening any widget field, or a page area, opens every area on that form. The bar shows a widgets icon, the active area's field label and how many widgets it holds; with more than one area, the label is a menu that switches between them. Undo, redo, **Cancel** and **Done** are on the right. The same icon is on the button that opens the editor. **Done** keeps the edits. **Cancel**, and Escape when nothing else is open, closes without them. If anything has changed since the editor opened, it asks first; discarding writes each area back to how it was.
 
-The outline on the left lists instances with a number, label and a line of their text, and each slot's children beneath. Dragging a row moves it: the upper half of a row drops before it, the lower half after it, and a slot's **Add to** button drops at the end of that slot. Within the same session a row can move to another area. Duplicate and remove are on each row, on the canvas toolbar, and at the top of the inspector.
+The outline on the left lists instances with a number, label and a line of their text. It can be hidden. A container's children sit under it, indented, with a vertical line tying them to the parent. A nested row's highlight starts on that line. Each slot has its own collapse control. Hovering the boundary between two rows, including the top of the list and the end of a slot, reveals a centred **+** that inserts there; it takes no space, so the rows do not move.
 
-Removing a widget asks for confirmation in an admin modal, which also says how many widgets inside it go with it. Delete or Backspace asks for the selected widget. Undo and redo cover insert, duplicate, remove and move. Consecutive edits to one instance are a single undo step.
+Dragging a row moves it. The marker is only as wide as the list it lands in, so a drop inside a container reads as inside it. The upper half of a row is the place before it. The lower half of a leaf, or of a container whose slots are collapsed, is the place after it. The lower half of an open container is the start of its first open slot, because nothing can be inserted between a container and its children; a container cannot be dropped into itself, and that marker shows below its children instead. Within the same session a row can move to another area. Duplicate and remove are on each row, on the canvas toolbar, and at the top of the inspector.
 
-**Insert**, the `/` key, a **+** between widgets on the canvas, and **Add widget** at the end of the page open the insert drawer. The drawer lists widgets the active area allows, with favourites first; hovering one shows its screenshot and description. A widget chosen from a **+** goes at that position; otherwise it goes after the selected widget, at the end of the selected widget's first slot when it has slots, or at the end of the area. Enter in the search inserts the first match. Hidden and deprecated widgets stay out of the organiser; an instance of one that is already saved can still be edited. A disabled or unknown instance is locked: it can be removed or reordered in its own list, and its stored object is kept.
+Removing a widget asks for confirmation in an admin modal. The modal's actions hold Cancel and Remove, and the body says how many widgets inside it go with it. Delete or Backspace asks for the selected widget. Undo and redo cover insert, duplicate, remove and move. Consecutive edits to one instance are a single undo step.
+
+A **+** between rows in the outline, a **+** between widgets on the canvas, and **Add widget** at the end of the page open the insert drawer. The drawer lists widgets the active area allows, with favourites first; hovering one shows its screenshot and description. A widget chosen from a **+** goes at that position. Enter in the search inserts the first match. Hidden and deprecated widgets stay out of the organiser; an instance of one that is already saved can still be edited. A disabled or unknown instance is locked: it can be removed or reordered in its own list, and its stored object is kept.
 
 The inspector on the right shows the selected widget's label, group and description above its settings. A widget with no settings says so and points to editing its text on the page.
 
 An HTML-form widget loads its form from `POST …/inspector` and writes the field values back with the same rules as the v1 serialiser. A bridged v1 widget's `dropped` script runs once its form is placed, and its `removed` script runs before the widget is removed (see [Scripts](v2.md#scripts)). **Open in modal** moves that form into a dialog for wide controls, and closing the dialog moves it back with its values. A widget that declares fields gets its form from [Fields](#fields) instead. Nothing is written for an instance the user has not edited, so opening and closing an area leaves its JSON untouched.
 
-Every change is written to the widget field straight away, and a page writes its template data on the same change. A copy is also kept in `localStorage` under `cms-widget-editor:` plus the area slugs, so a crash can be restored. Closing the editor drops that copy.
+Every change is written to the widget field straight away, and a page writes its template data on the same change. A copy is also kept in `localStorage` under `cms-widget-editor:` plus the area slugs, so a crash can be restored. **Done** drops that copy. **Cancel** drops it only after discarding changes, so an unrestored copy from an earlier session is left alone when nothing was edited.
 
 ## Area rules
 
@@ -49,7 +51,7 @@ A widget marks its editable fields in its preview markup (see [Editable fields](
 
 ### Rich text
 
-The rich text modal is Tiptap. Its schema is paragraphs, bold, italic, links, lists and headings. Save is enabled only after the user changes the text, so a field that is opened and closed is never written back, even if its stored HTML has markup the schema does not keep. Save writes the HTML Tiptap produces, which normalises it (for example `<b>` becomes `<strong>`). Escape or Cancel closes the modal without writing.
+The rich text modal is Tiptap. Its schema is paragraphs, bold, italic, links, lists and headings. Save, in the modal's actions, is enabled only after the user changes the text, so a field that is opened and closed is never written back, even if its stored HTML has markup the schema does not keep. Save writes the HTML Tiptap produces, which normalises it (for example `<b>` becomes `<strong>`). Escape or Cancel closes the modal without writing.
 
 While a modal is open, keys belong to it. Backspace in the rich text editor does not remove the selected widget.
 
