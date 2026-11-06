@@ -4,7 +4,7 @@ The editor is a full-screen overlay on the existing widget field. Pages, areas, 
 
 ## Which editor opens
 
-`CMS_WIDGET_EDITOR_ENABLE` lists the versions, in the same way as `CDN_MEDIA_MANAGER_ENABLE`. An empty or missing value enables both, so the first time a browser opens an editor it gets v1, and that choice is stored for the session. An app sets `['v1']` or `['v2']` to keep one. An app that is not ready for v2 should set `['v1']`. Existing v1 widgets open in v2 once they are bridged (see [Bridging v1 widgets](v2.md#bridging-v1-widgets)).
+`CMS_WIDGET_EDITOR_ENABLE` lists the versions, in the same way as `CDN_MEDIA_MANAGER_ENABLE`. An empty or missing value enables both, so the first time a browser opens an editor it gets v1, and that choice is stored for the session. An app sets `['v1']` or `['v2']` to keep one. An app that is not ready for v2 should set `['v1']`. The widgets modules ship open in v2 as they are. An app's own v1 widgets open in v2 once they are ported or bridged (see [Bridging v1 widgets](v2.md#bridging-v1-widgets)).
 
 The choice is `CMS_WIDGET_EDITOR_DEFAULT` in the session (`Session::setUserData()`). It lapses with the session. A stored choice for a version that is no longer enabled is replaced by the first enabled version.
 
