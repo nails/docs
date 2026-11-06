@@ -36,7 +36,7 @@ Every change is written to the widget field straight away, and a page writes its
 
 ## Canvas
 
-The canvas shows each top-level instance's server-rendered preview in a same-origin iframe. The iframe is sandboxed without `allow-scripts`, so preview markup does not run script. Previews refresh 300ms after a change, and only instances whose slug or data changed are re-requested. A preview that fails shows an error card in place of the widget. A locked instance shows a warning there instead of a preview.
+The canvas shows each top-level instance's server-rendered preview in a same-origin iframe. The iframe is sandboxed without `allow-scripts`, so preview markup does not run script. Previews refresh 300ms after a change, and only instances whose slug or data changed are re-requested. While a preview is rendering again, the one already on the canvas stays and is dimmed under **Generating preview**. The first preview, before there is anything to keep, says **Loading preview**. A preview that fails shows an error card in place of the widget. A locked instance shows a warning there instead of a preview.
 
 The canvas is drawn as a page with a maximum width. The iframe is sized to its content and the stage around it scrolls. The iframe loads once. A change to an instance replaces only that instance's markup, and the field being edited inline is left alone until editing ends. Links in the canvas do not navigate.
 
