@@ -108,6 +108,7 @@ Each field is an instance of a field type, made with `make()` and the data key (
 | `Nails\Cms\Cms\Fields\Toggle` | `toggle` | the admin switch | |
 | `Nails\Cms\Cms\Fields\Number` | `number` | number input | `min()`, `max()` |
 | `Nails\Cms\Cms\Fields\Repeater` | `repeater` | a list of rows, each with its own fields | `fields()`, `min()`, `max()`; rows cannot hold another repeater |
+| `Nails\Cms\Cms\Fields\Table` | `table` | a grid of text cells, stored as a list of rows of strings | `size($rows, $columns)`: the empty grid a new instance starts with (3 × 3 by default) |
 | `Nails\Cdn\Cms\Fields\ObjectPicker` | `cdn_object` | CDN object picker, stores the object id (module-cdn) | `bucket()` (the bucket slug) |
 
 Rules:
@@ -119,7 +120,8 @@ Rules:
 - **`required`** shows an asterisk. It never blocks a save. A toggle is never empty.
 - **`wide`** shows a short summary in the inspector, clamped to three lines, with **Edit** for the control in a modal. The modal holds the control only; its title is the label. Changes are written straight away; **Done** closes it. Rich text is already a summary with the same **Edit** button, so `wide` does not change it.
 - **`min` and `max`** are a hint. A number outside them is kept; nothing is clamped.
-- A repeater's **Add item** stops at `max`, and **Remove** stops at `min`. With no minimum the last row can be removed. An empty list is a dashed **Add an item** button. A row is titled from its first field's text, or that field's selected option, and that title collapses the row. Rows move with the up and down icons. A select uses Select2, which admin already loads, without the search box.
+- A repeater's **Add item** stops at `max`, and **Remove** stops at `min`. With no minimum the last row can be removed. An empty list is a dashed **Add an item** button. A row is titled from its first field's text, or that field's selected option, and that title collapses the row. Rows move with the up and down icons. A select uses Select2, which admin already loads, without the search box. Select2 reports the choice through jQuery's change event, and the control listens for that, so the stored value matches the drop-down.
+- A table has **Add row** and **Add column**. The × above a column removes it, and the bin at the end of a row removes that row. Removing the last column empties the table, which shows a dashed **Add a row** button. Rows are filled to the widest row when the widget renders. The summary is the size, for example "3 rows × 2 columns"; a table whose cells are all blank counts as empty for `required`.
 - A bad schema (something in the list that is not a field, an invalid or duplicate key, a select without options, a `default` that is not an option, a repeater without fields or inside a repeater) throws `InvalidArgumentException` when the editor loads its catalogue, so it shows on the first admin request. It is a developer error, not a user one.
 
 A new instance starts with each field's default; a key in the widget's `$defaults` overrides it. Before a widget renders and before its inspector loads, `normalise()` fills any missing defaults, including those of each repeater row. So a field added to a widget later shows its default on existing content, and nothing is saved until the user edits it.
