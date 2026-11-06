@@ -208,7 +208,7 @@ The editor draws the label, tip, required marker and warning around the componen
 
 ### Kitchen sink
 
-`Nails\Cms\Cms\Widgets\KitchenSink` uses every field type and setting Nails ships: text, both rich text editors on the canvas and in the inspector, a wide textarea and repeater, conditional fields, number limits, and CDN pickers at the top level and in a row. Use it to check the inspector and the canvas after a change. It is in the Developer group, and hidden in production.
+`Nails\Cms\Cms\Widgets\KitchenSink` uses every field type and setting Nails ships: text, both rich text editors on the canvas and in the inspector, a wide textarea, table and repeater, conditional fields, number limits, and CDN pickers at the top level and in a row. Use it to check the inspector and the canvas after a change. It is in the Developer group, and hidden in production.
 
 ## Not in this editor yet
 
