@@ -126,6 +126,20 @@ Rules:
 
 A new instance starts with each field's default; a key in the widget's `$defaults` overrides it. Before a widget renders and before its inspector loads, `normalise()` fills any missing defaults, including those of each repeater row. So a field added to a widget later shows its default on existing content, and nothing is saved until the user edits it.
 
+When the stored shape changes, override `upgrade()` to convert the older data. It must be pure, and it must return data that is already in the current shape unchanged. `normalise()` applies it before filling defaults, so `render()` and `preview()` always see the current shape. A widget that overrides it is flagged `upgrades` in the catalogue. When one is selected, the editor asks `…/inspector` for the upgraded data and shows that in the inspector. The first edit starts from the upgraded data, so the saved instance holds the current shape only. An instance nobody edits is saved exactly as it was.
+
+```php
+public function upgrade(array $data): array
+{
+    if (!array_key_exists('title', $data) && array_key_exists('sTitle', $data)) {
+        $data['title'] = $data['sTitle'];
+    }
+    unset($data['sTitle']);
+
+    return $data;
+}
+```
+
 A field can also be edited inline: call `editable()` for it in `render()`. The inspector leaves that field out, because the page is where it is changed. A field the preview does not mark, including one inside a repeater row, stays in the inspector. A repeater row has no path to address it, so it cannot be edited inline.
 
 ### Field types
