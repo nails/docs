@@ -104,7 +104,7 @@ Each field is an instance of a field type, made with `make()` and the data key (
 | `Nails\Cms\Cms\Fields\Text` | `text` | single line; can be edited on the canvas | `maxLength()` |
 | `Nails\Cms\Cms\Fields\Textarea` | `textarea` | multi-line text | `maxLength()` |
 | `Nails\Cms\Cms\Fields\Richtext` | `richtext` | Tiptap text, edited on the canvas; the modal is the fallback | `basic()`: formatting only (undo, bold, italic, link) instead of the simple editor menu (headings 1 to 6, lists, blockquote, code block, bold, italic, link) |
-| `Nails\Cms\Cms\Fields\Select` | `select` | drop-down | `options()`, a map of value to label; the first is the default |
+| `Nails\Cms\Cms\Fields\Select` | `select` | drop-down | `options()`, a map of value to label, shown in the order given; the first is the default |
 | `Nails\Cms\Cms\Fields\Toggle` | `toggle` | the admin switch | |
 | `Nails\Cms\Cms\Fields\Number` | `number` | number input | `min()`, `max()` |
 | `Nails\Cms\Cms\Fields\Repeater` | `repeater` | a list of rows, each with its own fields | `fields()`, `min()`, `max()`; rows cannot hold another repeater |
