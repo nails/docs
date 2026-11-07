@@ -69,7 +69,7 @@ CDN ships routines that expire tokens and empty old trash. See [Housekeeping](ho
 
 ## CMS widget
 
-The CDN module supplies a CMS widget with the slug `image`. The v1 class is `Nails\Cdn\Cms\Widget\Image`. WidgetEditor (v2) uses `Nails\Cdn\Cms\Widgets\Image`, which answers to the same slug. How widgets are discovered and how `DISABLED`, `HIDDEN`, and `DEPRECATED` behave is covered in [CMS widgets](../cms/widgets/).
+The CDN module supplies a CMS widget with the slug `image`: `Nails\Cdn\Cms\Widgets\Image`. It answers to that slug. How widgets are discovered and how `DISABLED`, `HIDDEN`, and `DEPRECATED` behave is covered in [CMS widgets](../cms/widgets/).
 
 The editor asks for a CDN object (`iImageId`) and then:
 
@@ -88,7 +88,7 @@ Crop and scale call `cdnCrop()` and `cdnScale()`, and they render nothing until 
 
 Older saves used different keys. `upgrade()` copies `image_id`, `scaling`, `size`, `linking`, `url`, `target`, `img_attr` and `link_attr` onto the current keys, and the current key wins when both are stored. A legacy `width` and `height` become `sSize` when that pair is one of the permitted dimensions; any other pair is left as stored.
 
-The v1 class implements `Nails\Cms\Interfaces\Monitor\Cdn\Widget` and reports `iImageId`, so CDN usage monitoring can find the object inside widget data.
+`getCdnMonitorPaths()` returns `iImageId`. The CDN monitor watches that path on the class slug and on the `image` alias, so it can find the object inside widget data.
 
 ```php
 <?=cmsWidget('image', [

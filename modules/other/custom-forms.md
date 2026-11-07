@@ -8,7 +8,7 @@ The Custom Forms module stores forms that editors manage under Custom Forms in a
 
 ## CMS widget
 
-Slug `customform`, grouped under **Custom Forms**. The v1 class is `Nails\CustomForms\Cms\Widget\Customform`. WidgetEditor (v2) uses `Nails\CustomForms\Cms\Widgets\CustomForm`, which answers to the same slug and the same stored keys. Content saved under the previous class name still opens. How widgets are discovered, overridden, and retired is covered in [CMS widgets](../cms/widgets/).
+Slug `customform`, grouped under **Custom Forms**. The widget is `Nails\CustomForms\Cms\Widgets\CustomForm`. It answers to the slug `customform` and to content saved under the previous class name. How widgets are discovered, overridden, and retired is covered in [CMS widgets](../cms/widgets/).
 
 The editor lists existing forms and three switches:
 

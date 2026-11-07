@@ -1,16 +1,8 @@
 # WidgetEditor (v2) editor
 
-The editor is a full-screen overlay on the existing widget field. Pages, areas, and any `form_field_cms_widgets()` consumer keep the same button and the same stored JSON. The v1 editor stays in place. Which one opens is a session choice.
+The editor is a full-screen overlay on the existing widget field. Pages, areas, and any `form_field_cms_widgets()` consumer keep the same button and the same stored JSON. It is the only editor. There is no setting that opens the previous one.
 
-## Which editor opens
-
-`CMS_WIDGET_EDITOR_ENABLE` lists the versions, in the same way as `CDN_MEDIA_MANAGER_ENABLE`. An empty or missing value enables both, so the first time a browser opens an editor it gets v1, and that choice is stored for the session. An app sets `['v1']` or `['v2']` to keep one. An app that is not ready for v2 should set `['v1']`. The widgets modules ship open in v2 as they are. An app's own v1 widgets open in v2 once they are ported or bridged (see [Bridging v1 widgets](v2.md#bridging-v1-widgets)).
-
-The choice is `CMS_WIDGET_EDITOR_DEFAULT` in the session (`Session::setUserData()`). It lapses with the session. A stored choice for a version that is no longer enabled is replaced by the first enabled version.
-
-With both versions enabled, v1 shows **Try the new editor**. That stores v2 and reloads. v2 shows **Use the previous editor**, which stores v1 and reloads. `PUT api/cms/widgeteditor/version` with `{"version": "v1"}` or `{"version": "v2"}` is the call both buttons make.
-
-The page embeds the enabled versions and the active one in `#cms-widget-editor-config`. When v2 is enabled, the field also loads Vue 3 (`Asset::vue3()`), `admin.widget-editor.min.js` / `admin.widget-editor.min.css`, and the editor assets of every installed [field type](#field-types). Vue is a webpack external, so the bundle does not include it. The bundle is not on admin pages that have no widget field.
+An app's own v1 widgets open here once they are ported or bridged (see [Bridging v1 widgets](v2.md#bridging-v1-widgets)). A widget field loads Vue 3 (`Asset::vue3()`), `admin.widget-editor.min.js` / `admin.widget-editor.min.css`, and the editor assets of every installed [field type](#field-types). Vue is a webpack external, so the bundle does not include it. The bundle is not on admin pages that have no widget field.
 
 ## What the overlay does
 
