@@ -69,25 +69,26 @@ CDN ships routines that expire tokens and empty old trash. See [Housekeeping](ho
 
 ## CMS widget
 
-The CDN module supplies a CMS widget with the slug `image` (class `Nails\Cdn\Cms\Widget\Image`). It appears in the widget editor alongside the widgets shipped by the CMS module. How widgets are discovered and how `DISABLED`, `HIDDEN`, and `DEPRECATED` behave is covered in [CMS widgets](../cms/widgets/).
+The CDN module supplies a CMS widget with the slug `image`. The v1 class is `Nails\Cdn\Cms\Widget\Image`. WidgetEditor (v2) uses `Nails\Cdn\Cms\Widgets\Image`, which answers to the same slug. How widgets are discovered and how `DISABLED`, `HIDDEN`, and `DEPRECATED` behave is covered in [CMS widgets](../cms/widgets/).
 
 The editor asks for a CDN object (`iImageId`) and then:
 
 | Field | Values |
 | --- | --- |
 | `sScaling` | `NONE` (native size), `CROP`, or `SCALE` |
-| `sSize` | A `widthxheight` pair drawn from the app's permitted image dimensions. The widget renders only when this is set. `NONE` still serves the original; crop and scale use the pair. |
+| `sSize` | A `widthxheight` pair drawn from the app's permitted image dimensions, landscape then portrait then square. Shown only when scaling is `CROP` or `SCALE`. |
+| `sAlignment` | `left`, `center`, or `right`. The wrapper is `cms-widget-image--{alignment}` with that `text-align`. Anything else is left. |
 | `sLinking` | `NONE`, `FULLSIZE` (the original object), or `CUSTOM` |
-| `sUrl` | Used when linking is `CUSTOM` |
-| `sTarget` | Empty, `_blank`, or `_parent` |
+| `sUrl` | Shown, and used, when linking is `CUSTOM` |
+| `sTarget` | Empty, `_blank`, or `_parent`. Shown when linking is `FULLSIZE` or `CUSTOM` |
 | `sImgAlt`, `sImgTitle` | `alt` and `title` on the `<img>` |
-| `sImgAttr`, `sLinkAttr` | Extra attributes on the image and the link |
+| `sImgAttr`, `sLinkAttr` | Extra attributes on the image and the link. The link attributes are shown with the target |
 
-Crop and scale call `cdnCrop()` and `cdnScale()`. `NONE` calls `cdnServe()`. The markup is wrapped in `.cms-widget-image`. A missing object, or a size the driver rejects, renders nothing.
+Crop and scale call `cdnCrop()` and `cdnScale()`, and they render nothing until a size is chosen. `NONE` calls `cdnServe()` and does not need a size. The markup is wrapped in `.cms-widget-image`. A missing object, or a size the driver rejects, renders nothing. On the canvas the same cases ask for an image, ask for a size, or say the image could not be loaded, and the image is kept within the canvas width.
 
-Older saves used different keys. The widget still reads `image_id`, `scaling`, `size`, `url`, `target`, `img_attr`, and `link_attr`, and it maps a legacy `width` and `height` onto `sSize` when that pair is one of the permitted dimensions.
+Older saves used different keys. `upgrade()` copies `image_id`, `scaling`, `size`, `linking`, `url`, `target`, `img_attr` and `link_attr` onto the current keys, and the current key wins when both are stored. A legacy `width` and `height` become `sSize` when that pair is one of the permitted dimensions; any other pair is left as stored.
 
-The widget implements `Nails\Cms\Interfaces\Monitor\Cdn\Widget` and reports `iImageId`, so CDN usage monitoring can find the object inside widget data.
+The v1 class implements `Nails\Cms\Interfaces\Monitor\Cdn\Widget` and reports `iImageId`, so CDN usage monitoring can find the object inside widget data.
 
 ```php
 <?=cmsWidget('image', [
