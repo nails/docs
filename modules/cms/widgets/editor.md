@@ -116,7 +116,7 @@ Rules:
 - **`tip`** is the question-mark hint, using the same hint as the rest of admin. It opens to the right, so the text stays inside the inspector.
 - **`subtitle`** is quiet text under the label.
 - **`info`** is text under the control. The second argument is a class, for example `alert alert-info`, the same as a form field's info class.
-- **`visibleWhen`** shows the field only while every named sibling has the given value, compared strictly. A hidden field keeps its value, so it comes back when the condition does. A name that is not a sibling is a schema error.
+- **`visibleWhen`** shows the field only while every named sibling has the given value, compared strictly. A condition that is a list matches when the sibling is one of those values. A hidden field keeps its value, so it comes back when the condition does. A name that is not a sibling is a schema error.
 - **`required`** shows an asterisk. It never blocks a save. A toggle is never empty.
 - **`wide`** shows a short summary in the inspector, clamped to three lines, with **Edit** for the control in a modal. The modal holds the control only; its title is the label. Changes are written straight away; **Done** closes it. Rich text is already a summary with the same **Edit** button, so `wide` does not change it.
 - **`min` and `max`** are a hint. A number outside them is kept; nothing is clamped.
