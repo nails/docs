@@ -6,6 +6,12 @@ description: Admin form chrome — fieldsets, tables, floating save, tips, and r
 
 Admin forms share a small set of conventions on top of the [common form helpers](../../key-concepts/form-fields.md). This page covers the chrome; the helpers themselves live in `nails/common`.
 
+## Narrow screens
+
+Below 768px the label, its hint and the control stack. The control is the full width of the field, and so is a button that lives in the control, such as Open Widget Editor. Text fields are 16px so focusing one does not zoom the page.
+
+From 768px to 991px the label stays beside the control, left aligned and narrower, and the control takes the remaining width. A button in the control fills that column rather than the whole card. Wider than that, the desktop row is unchanged: a right-aligned label beside the control.
+
 ## Fieldsets
 
 A `<fieldset>` with a `<legend>` is the card around a group of fields. [DefaultController](controllers/default-controller.md) edit screens put each model fieldset in its own [tab](javascript/tabs.md); `Helper::tabs()` wraps loose tab content in a legend-less fieldset so it still gets card chrome.
