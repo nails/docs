@@ -6,7 +6,7 @@ An app's own v1 widgets open here once they are ported or bridged (see [Bridging
 
 ## What the overlay does
 
-Opening any widget field, or a page area, opens every area on that form. The bar shows a widgets icon and the active area's field label; with more than one area, the label is a menu that switches between them. Undo, redo, **Cancel** and **Done** are on the right. The same icon is on the button that opens the editor. **Done** keeps the edits. **Cancel**, and Escape when nothing else is open, closes without them. If anything has changed since the editor opened, it asks first; discarding writes each area back to how it was.
+Opening any widget field, or a page area, opens every area on that form. The bar shows a widgets icon and the label of the area that was opened. Undo, redo, **Cancel** and **Done** are on the right. The same icon is on the button that opens the editor. **Done** keeps the edits. **Cancel**, and Escape when nothing else is open, closes without them. If anything has changed since the editor opened, it asks first; discarding writes each area back to how it was.
 
 The outline on the left lists instances with a number, label and a line of their text. Its collapse control sits before the label, and stays put when the column closes. The inspector on the right is titled the same way, with its control on the right edge, and it collapses the same way. A container's children sit under it, indented, with a vertical line tying them to the parent. A nested row's highlight starts on that line. Each slot has its own collapse control. Hovering the boundary between two rows, including the top of the list and the end of a slot, reveals a centred **+** that inserts there; it takes no space, so the rows do not move.
 
