@@ -13,6 +13,10 @@ Admin shows two screens under Utilities, for users with the matching permission:
 
 The widget screen includes hidden widgets and excludes disabled ones. A deprecated widget or template is flagged on its detail screen, including the `ALTERNATIVE` text when one is set.
 
+**Export as CSV** sits in the widget list's page header and downloads `cms-widgets.csv`. The file uses the search and sort on the screen. The columns are label, slug, description, usages, whether the widget is in use (at least one usage), and whether it is deprecated.
+
+On the screen, **In use** is a tick when the usage count is above zero. Deprecation is a badge beside the label, with the alternative when one is set. A deprecated widget can be in use, and an unused widget can be active.
+
 ## Mappers
 
 A mapper is any class under a component's `Cms\Monitor` namespace that implements one of:
