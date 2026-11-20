@@ -89,6 +89,7 @@ The action URL is relative to the controller, so `'reviews'` links to `Book::url
 A few rules apply:
 
 * **Groups merge by label.** Several controllers, even from different modules, can add links to the same group (for example `Settings`). If they disagree on the icon, the most common one wins. Add `!important` to the icon to force it.
+* **No icon.** A group with no icon uses a cog (`fa-cog`) in the sidebar and in header search.
 * **Empty groups are hidden.** Only add actions the current user is allowed to use, and a user with no access won't see the group at all. Returning `null` keeps the controller routable but leaves it out of the sidebar.
 * **Order.** _Dashboard_ comes first, then the other groups in alphabetical order, then _Settings_ and _Utilities_. Users can reorder and collapse groups, and Admin remembers their choice.
 

@@ -6,7 +6,7 @@ description: >-
 
 # Admin
 
-**Queue → Overview** shows what the queue is doing now: how many jobs are in each state, which workers are alive, and which jobs failed. It needs `nails/module-admin`.
+**Queue → Overview** shows what the queue is doing now: how many jobs are in each state, which workers are alive, and which jobs failed. The sidebar group uses the stacked-layers icon (`fa-layer-group`). It needs `nails/module-admin`.
 
 The screen loads its data from the [API](#api) and asks again every ten seconds, so it can stay open on a second monitor.
 
