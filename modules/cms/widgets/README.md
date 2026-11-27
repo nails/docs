@@ -24,7 +24,7 @@ application/modules/cms/widgets/MyWidget/
         removed.js
 ```
 
-`widget.php` is the definition. The directory name is the slug (`MyWidget`). The class name is that slug with the first letter uppercased (`MyWidget`), in the `App\Cms\Widget` namespace. A module widget uses the module namespace plus `Cms\Widget`, so the CMS module's accordion widget is `Nails\Cms\Cms\Widget\Accordion` in `cms/widgets/accordion/`.
+`widget.php` is the definition. The directory name is the slug (`MyWidget`). The class name is that slug with the first letter uppercased (`MyWidget`), in the `App\Cms\Widget` namespace. A module widget uses the module namespace plus `Cms\Widget`.
 
 `screenshot.png` (also `.jpg` or `.gif`) is optional. The editor shows it when the pointer is over the widget in the sidebar. Aim for about 500px wide, with as little surrounding page as possible.
 
