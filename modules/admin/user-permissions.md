@@ -92,6 +92,10 @@ These global functions are always loaded:
 
 They wrap the `Permission` service (`Factory::service('Permission', 'nails/module-admin')`), which also has `get()` and `getGrouped()` for listing every discovered permission.
 
+## Settings pages
+
+Each [settings page](settings-pages.md) has its own permission, returned by the settings class's `getPermission()`. A user can open that page if they hold it, if they are a super user, or if they hold `Nails\Admin\Admin\Permission\Settings\Manage` ("Can manage all application settings"), which is sudo for settings and unlocks every page.
+
 ## Renaming or moving permissions
 
 ACLs store class names, so renaming or moving a permission class removes it from every group that had it. To carry grants across, write a [migration](../../core-services/database/migrations.md) that uses the `Nails\Admin\Traits\Database\Migration\PermissionMap` trait, and set a `MAP` of old names to new ones:

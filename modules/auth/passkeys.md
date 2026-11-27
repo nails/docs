@@ -28,7 +28,7 @@ Run [migrations](../../core-services/database/migrations.md) so the `user_passke
 AUTH_PASSKEYS_ENABLED=true
 ```
 
-Admin under **Settings → Authentication → Login** shows whether they are on, and the current Relying Party ID, but cannot change either.
+Admin under **Settings → Auth: Login** shows whether they are on, and the current Relying Party ID, but cannot change either.
 
 Nothing changes for existing users until they register a passkey; password login is untouched. Requires `ext-openssl`.
 

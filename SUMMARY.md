@@ -63,6 +63,7 @@
     * [Default Controller](modules/admin/controllers/default-controller.md)
     * [Breadcrumbs](modules/admin/controllers/breadcrumbs.md)
   * [User Permissions](modules/admin/user-permissions.md)
+  * [Settings pages](modules/admin/settings-pages.md)
   * [Helper](modules/admin/helper/README.md)
     * [Tabs](modules/admin/helper/tabs.md)
   * [Forms](modules/admin/forms.md)
