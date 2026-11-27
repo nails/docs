@@ -34,7 +34,7 @@ Discovery works by namespace. In your app, the `App\` namespace maps to `src/`, 
 | [Scheduled exports](data-export.md#scheduled-exports)         | `App\Admin\DataExport\Schedule`             | `src/Admin/DataExport/Schedule/`     | `Nails\Admin\Interfaces\DataExport\Schedule`             |
 | "Create" header button                                        | `App\Admin\Ui\Header\Button\Create`         | `src/Admin/Ui/Header/Button/Create/` | `Nails\Admin\Interfaces\Ui\Header\Button\Create`         |
 | Header search section                                         | `App\Admin\Ui\Header\Button\Search\Section` | `src/Admin/Ui/Header/Button/Search/Section/` | `Nails\Admin\Interfaces\Ui\Header\Button\Search\Section` |
-| Settings pages                                                | `App\Settings`                              | `src/Settings/`                      | `Nails\Common\Interfaces\Component\Settings`             |
+| [Settings pages](settings-pages.md)                           | `App\Settings`                              | `src/Settings/`                      | `Nails\Common\Interfaces\Component\Settings`             |
 
 Views are the one exception. They are plain PHP templates, not classes, so they sit in `application/modules/admin/views/` rather than in `src/`. See [Views](controllers/#views).
 
@@ -47,7 +47,7 @@ The Admin module builds its own screens (Dashboard, Settings, Utilities, Change 
 When the module is installed you get:
 
 * **Dashboard.** A per-user grid of [widgets](dashboard-widgets.md) and any active [alerts](dashboard-widgets.md#dashboard-alerts).
-* **Settings.** One page for each component that provides a settings class, under the _Settings_ sidebar group.
+* **Settings.** One page for each component that provides a [settings class](settings-pages.md), under the _Settings_ sidebar group. Super users and anyone with "Can manage all application settings" see every page; everyone else sees only the pages they have been granted.
 * **Utilities.** _Export Data_ ([Data Export](data-export.md)) and _Rewrite Routes_.
 * **Logs → Change Log.** An audit trail of create, edit, delete and restore actions made through the [DefaultController](controllers/default-controller.md).
 * **Styleguide.** A living reference of the admin components. It has no sidebar link; its controller returns `null` from `announce()`, so you reach it by URL.
