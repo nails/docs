@@ -36,7 +36,11 @@ There was no scheduled cleaner for this table before.
 
 ## User events
 
-`Nails\Auth\Housekeeping\UserEvents` deletes rows from `user_event` older than `AUTH_USER_EVENT_RETENTION_DAYS`. Unset or `0` disables deletion; the routine still appears in the list and no-ops. There is no module default — apps that want a policy set the config.
+`Nails\Auth\Housekeeping\UserEvents` deletes rows from `user_event` older than `AUTH_USER_EVENT_RETENTION_DAYS`. The default is `90` days. Set it to `0` to disable deletion; the routine still appears in the list and no-ops.
+
+{% hint style="warning" %}
+**Behaviour change.** Apps that do not set `AUTH_USER_EVENT_RETENTION_DAYS` will, on the next daily run, delete user events older than 90 days. Previously nothing was deleted. Set the key to a larger value, or `0`, before upgrading if you need to keep the history. On a large table the first run deletes in batches and may take a while; run `housekeeping:run --routine=… --dry-run` first if you want to see what would go.
+{% endhint %}
 
 It runs daily.
 

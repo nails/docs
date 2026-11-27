@@ -236,7 +236,7 @@ Retention is config-only. There is no Admin UI for these values — set them in 
 | `EMAIL_ARCHIVE_RETENTION_DAYS` | `0` (disabled) | [Email](../email.md#housekeeping) |
 | `ADMIN_CHANGELOG_RETENTION_DAYS` | `0` (disabled) | [Admin](../admin/housekeeping.md) |
 | `ADMIN_SESSION_RETENTION` | `3600` | [Admin](../admin/housekeeping.md) |
-| `AUTH_USER_EVENT_RETENTION_DAYS` | `0` (disabled) | [Auth](../auth/housekeeping.md) |
+| `AUTH_USER_EVENT_RETENTION_DAYS` | `90` (days; `0` disables) | [Auth](../auth/housekeeping.md) |
 | `AUTH_USER_IMPORT_STALE_CLAIM` | `900` | [Auth](../auth/housekeeping.md) |
 | `AUTH_USER_IMPORT_DRAFT_TTL` | `86400` | [Auth](../auth/housekeeping.md) |
 | `AUTH_USER_IMPORT_RETENTION` | `2592000` | [Auth](../auth/housekeeping.md) |
